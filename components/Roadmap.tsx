@@ -1,52 +1,47 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MapPin, Mountain, Building2, Train, AlertCircle, FileCheck, Shield, Clock, Zap, Calendar } from 'lucide-react';
+import { MapPin, Mountain, Building2, Train, AlertCircle, FileCheck, Shield, Clock, Zap, Calendar, Check, Milestone } from 'lucide-react';
+import { supabase } from '../services/supabaseClient';
+import { RoadmapPhase } from '../types';
 
-const phases = [
-  {
-    id: 'solan',
-    city: 'Solan',
-    status: 'LAUNCHING MARCH END',
-    icon: MapPin,
-    color: 'text-emerald-600',
-    bg: 'bg-emerald-100',
-    border: 'border-emerald-200',
-    desc: 'The pilot city. We go live here by the end of March. Join the waitlist to be the first to skip the line.'
-  },
-  {
-    id: 'hp',
-    city: 'Himachal Pradesh',
-    status: 'PHASE 2',
-    icon: Mountain,
-    color: 'text-blue-600',
-    bg: 'bg-blue-100',
-    border: 'border-blue-200',
-    desc: 'Connecting hill stations. Perfect for travelers who need medicines urgently while on winding roads.'
-  },
-  {
-    id: 'delhi',
-    city: 'Delhi NCR',
-    status: 'PHASE 3',
-    icon: Building2,
-    color: 'text-indigo-600',
-    bg: 'bg-indigo-100',
-    border: 'border-indigo-200',
-    desc: 'Bringing speed to the capital. Skip the long metro-city queues and pre-book before you reach.'
-  },
-  {
-    id: 'east',
-    city: 'Kolkata & Bihar',
-    status: 'PHASE 4',
-    icon: Train,
-    color: 'text-orange-600',
-    bg: 'bg-orange-100',
-    border: 'border-orange-200',
-    desc: 'Serving high-density areas where waiting lines are the longest. Reliable healthcare access for everyone.'
-  }
-];
+// Map string keys to actual components
+const ICON_MAP: Record<string, any> = {
+  MapPin, Mountain, Building2, Train, Milestone, Calendar
+};
 
 const Roadmap: React.FC = () => {
+  const [phases, setPhases] = useState<RoadmapPhase[]>([]);
   const [visibleItems, setVisibleItems] = useState<string[]>([]);
   const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetchPhases();
+    
+    // Realtime subscription for immediate updates from Admin
+    const channel = supabase
+      .channel('roadmap-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'roadmap_phases' }, () => {
+        fetchPhases();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const fetchPhases = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('roadmap_phases')
+        .select('*')
+        .order('order_index', { ascending: true });
+      
+      if (data) setPhases(data as RoadmapPhase[]);
+      if (error) console.error("Error fetching roadmap:", error);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -60,76 +55,108 @@ const Roadmap: React.FC = () => {
           }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.2, rootMargin: "0px 0px -50px 0px" }
     );
 
     const items = document.querySelectorAll('.roadmap-item');
     items.forEach((item) => observer.observe(item));
 
     return () => observer.disconnect();
-  }, [visibleItems]);
+  }, [phases]);
 
   return (
     <section className="py-24 bg-slate-50 relative overflow-hidden" id="roadmap">
-      {/* Background Track */}
-      <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-slate-200 -translate-x-1/2 hidden md:block" />
-      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" ref={sectionRef}>
-        <div className="text-center mb-20">
+        <div className="text-center mb-20 animate-fade-in">
            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 mb-6">
               <Calendar className="h-4 w-4 text-blue-600" />
               <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">Launch Timeline</span>
            </div>
-           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
+           <h2 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6 tracking-tight">
              The Road to <span className="text-emerald-600">Pharmelo</span>.
            </h2>
-           <p className="text-slate-500 text-lg max-w-2xl mx-auto">
-             We are currently in the pre-launch phase. Join the waitlist to get notified when we launch in your city.
+           <p className="text-slate-500 text-lg max-w-2xl mx-auto font-light">
+             We are building the future of pharmacy pickup. Follow our journey as we expand city by city.
            </p>
         </div>
 
-        {/* Timeline */}
-        <div className="space-y-12 md:space-y-24 relative">
-          {phases.map((phase, index) => (
-            <div 
-              key={phase.id}
-              data-id={phase.id}
-              className={`roadmap-item flex flex-col md:flex-row items-center gap-8 md:gap-0 transition-all duration-1000 transform ${
-                visibleItems.includes(phase.id) 
-                  ? 'opacity-100 translate-y-0' 
-                  : 'opacity-0 translate-y-10'
-              } ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
-            >
-              {/* Content Side */}
-              <div className={`flex-1 text-center ${index % 2 === 0 ? 'md:text-right md:pr-12' : 'md:text-left md:pl-12'}`}>
-                <div className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold tracking-widest mb-3 ${phase.bg} ${phase.color}`}>
-                  {phase.status}
-                </div>
-                <h3 className="text-3xl font-bold text-slate-900 mb-3">{phase.city}</h3>
-                <p className="text-slate-500 font-medium leading-relaxed">{phase.desc}</p>
-              </div>
+        {/* Timeline Container */}
+        <div className="relative max-w-5xl mx-auto">
+          {/* Central Line - Desktop */}
+          <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-slate-200 -translate-x-1/2 hidden md:block rounded-full" />
+          
+          {/* Central Line - Mobile */}
+          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-slate-200 block md:hidden rounded-full" />
 
-              {/* Center Marker */}
-              <div className="relative flex-shrink-0 z-10">
-                <div className={`w-16 h-16 rounded-full bg-white border-4 ${phase.border} shadow-xl flex items-center justify-center relative`}>
-                   <phase.icon className={`h-8 w-8 ${phase.color}`} />
-                   {phase.id === 'solan' && (
-                     <span className="absolute -top-1 -right-1 flex h-4 w-4">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500"></span>
-                     </span>
-                   )}
-                </div>
-              </div>
+          <div className="space-y-16 md:space-y-32 relative pt-8">
+            {phases.map((phase, index) => {
+              const IconComponent = ICON_MAP[phase.icon_key] || MapPin;
+              const isVisible = visibleItems.includes(phase.id);
+              const isCompleted = phase.status === 'completed';
+              const isActive = phase.status === 'active';
+              
+              return (
+                <div 
+                  key={phase.id}
+                  data-id={phase.id}
+                  className={`roadmap-item relative flex flex-col md:flex-row items-center gap-8 md:gap-0 transition-all duration-1000 ease-out transform ${
+                    isVisible 
+                      ? 'opacity-100 translate-y-0 scale-100' 
+                      : 'opacity-0 translate-y-20 scale-95'
+                  } ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
+                >
+                  {/* Content Side */}
+                  <div className={`flex-1 w-full pl-20 md:pl-0 ${index % 2 === 0 ? 'md:text-right md:pr-16' : 'md:text-left md:pl-16'}`}>
+                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest mb-3 uppercase shadow-sm transition-colors duration-500
+                        ${isCompleted ? 'bg-green-100 text-green-700 border border-green-200' : ''}
+                        ${isActive ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : ''}
+                        ${phase.status === 'upcoming' ? 'bg-slate-100 text-slate-500 border border-slate-200' : ''}
+                    `}>
+                      {isCompleted && <Check size={12} />}
+                      {phase.status === 'active' && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>}
+                      {phase.date_display || phase.subtitle}
+                    </div>
+                    
+                    <h3 className={`text-3xl font-bold mb-3 transition-colors duration-500 ${isCompleted ? 'text-slate-400 line-through decoration-slate-300' : 'text-slate-900'}`}>
+                        {phase.title}
+                    </h3>
+                    <p className={`font-medium leading-relaxed transition-colors duration-500 ${isCompleted ? 'text-slate-400' : 'text-slate-500'}`}>
+                        {phase.description}
+                    </p>
+                  </div>
 
-              {/* Spacer Side */}
-              <div className="flex-1 hidden md:block" />
-            </div>
-          ))}
+                  {/* Center Marker */}
+                  <div className="absolute left-8 md:left-1/2 -translate-x-1/2 flex-shrink-0 z-20">
+                    <div className={`
+                        w-16 h-16 rounded-full border-[4px] flex items-center justify-center relative shadow-2xl transition-all duration-700
+                        ${isCompleted ? 'bg-green-500 border-green-100 scale-90' : ''}
+                        ${isActive ? 'bg-white border-emerald-500 scale-110' : ''}
+                        ${phase.status === 'upcoming' ? 'bg-white border-slate-200' : ''}
+                    `}>
+                       <IconComponent className={`
+                           h-7 w-7 transition-all duration-500
+                           ${isCompleted ? 'text-white' : ''}
+                           ${isActive ? 'text-emerald-600' : ''}
+                           ${phase.status === 'upcoming' ? 'text-slate-300' : ''}
+                       `} />
+                       
+                       {/* Active Pulse Ring */}
+                       {isActive && (
+                         <span className="absolute -inset-2 rounded-full border border-emerald-500/30 animate-ping"></span>
+                       )}
+                    </div>
+                  </div>
+
+                  {/* Spacer Side (for layout balance) */}
+                  <div className="flex-1 hidden md:block" />
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Feature Spotlight: Urgent & Verification */}
-        <div className="mt-32 bg-white rounded-[3rem] p-8 md:p-16 border border-slate-100 shadow-2xl shadow-blue-900/5 relative overflow-hidden">
+        <div className="mt-32 bg-white rounded-[3rem] p-8 md:p-16 border border-slate-100 shadow-2xl shadow-blue-900/5 relative overflow-hidden transform transition-all hover:shadow-blue-900/10 duration-500">
            <div className="absolute top-0 right-0 w-[30rem] h-[30rem] bg-indigo-50 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
            
            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center relative z-10">
@@ -145,14 +172,14 @@ const Roadmap: React.FC = () => {
                  </p>
                  
                  <div className="space-y-4">
-                    <div className="flex items-start gap-4 p-4 rounded-2xl bg-red-50 border border-red-100">
+                    <div className="flex items-start gap-4 p-4 rounded-2xl bg-red-50 border border-red-100 hover:scale-[1.02] transition-transform">
                        <Zap className="h-6 w-6 text-red-500 mt-1" />
                        <div>
                           <h4 className="font-bold text-slate-900">Urgent Packing Priority</h4>
                           <p className="text-sm text-slate-600">Shop owners get a loud alert for urgent traveler orders.</p>
                        </div>
                     </div>
-                    <div className="flex items-start gap-4 p-4 rounded-2xl bg-blue-50 border border-blue-100">
+                    <div className="flex items-start gap-4 p-4 rounded-2xl bg-blue-50 border border-blue-100 hover:scale-[1.02] transition-transform">
                        <Shield className="h-6 w-6 text-blue-500 mt-1" />
                        <div>
                           <h4 className="font-bold text-slate-900">Mandatory Verification</h4>
@@ -163,7 +190,7 @@ const Roadmap: React.FC = () => {
               </div>
 
               {/* UI Mockup for Urgent Flow */}
-              <div className="bg-slate-50 rounded-3xl p-6 border border-slate-200">
+              <div className="bg-slate-50 rounded-3xl p-6 border border-slate-200 rotate-1 hover:rotate-0 transition-transform duration-500">
                  <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mb-4">
                     <div className="flex justify-between items-center mb-2">
                        <span className="text-xs font-bold text-slate-400 uppercase">Upload Prescription</span>

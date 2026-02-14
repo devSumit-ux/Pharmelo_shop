@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, Shield, Users, Store, CheckCircle2 } from 'lucide-react';
+import { TrendingUp, Shield, Users, Store, CheckCircle2, Laptop } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Owners: React.FC = () => {
@@ -25,8 +25,8 @@ const Owners: React.FC = () => {
               <Link to="/partner-form" className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-bold text-lg transition-all shadow-xl shadow-blue-600/30">
                 Partner with Pharmelo
               </Link>
-              <Link to="/documentation" className="px-8 py-4 bg-white hover:bg-slate-50 text-slate-900 rounded-full font-semibold text-lg transition-all border border-slate-200 shadow-sm hover:shadow-md">
-                View Documentation
+              <Link to="/shop-demo" className="px-8 py-4 bg-white hover:bg-slate-50 text-slate-900 rounded-full font-semibold text-lg transition-all border border-slate-200 shadow-sm hover:shadow-md flex items-center gap-2 justify-center group">
+                <Laptop className="h-5 w-5 text-slate-500 group-hover:text-blue-600 transition-colors" /> Try Live Demo
               </Link>
             </div>
          </div>

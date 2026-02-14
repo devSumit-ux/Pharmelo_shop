@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { ArrowRight, Calendar, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
+import WaitlistModal from './WaitlistModal';
 
 // Utility component for animated counting
 const Counter = ({ from = 0, to, duration = 2500 }: { from?: number; to: number; duration?: number }) => {
@@ -61,6 +62,7 @@ const Counter = ({ from = 0, to, duration = 2500 }: { from?: number; to: number;
 const Hero: React.FC = () => {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [loading, setLoading] = useState(true);
+  const [showWaitlist, setShowWaitlist] = useState(false);
   
   // Initialize with 0 to wait for Real DB data
   const [stats, setStats] = useState({
@@ -196,13 +198,13 @@ const Hero: React.FC = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-5 justify-center items-center mb-20">
-          <Link 
-            to="/wishlist" 
+          <button 
+            onClick={() => setShowWaitlist(true)}
             className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-full font-bold text-lg transition-all duration-300 transform hover:-translate-y-1 shadow-[0_10px_40px_-10px_rgba(37,99,235,0.4)] hover:shadow-[0_20px_40px_-10px_rgba(37,99,235,0.6)] flex items-center gap-2 overflow-hidden"
           >
             <span className="relative z-10 flex items-center gap-2">Join Waitlist <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" /></span>
             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-          </Link>
+          </button>
           <Link 
             to="/owners" 
             className="px-8 py-4 bg-white hover:bg-slate-50 text-slate-900 rounded-full font-semibold text-lg transition-all duration-300 border border-slate-200 shadow-lg shadow-slate-200/50 hover:shadow-slate-300/50 hover:-translate-y-1 flex items-center gap-2"
@@ -255,6 +257,12 @@ const Hero: React.FC = () => {
            </div>
         </div>
       </div>
+
+      <WaitlistModal 
+        isOpen={showWaitlist} 
+        onClose={() => setShowWaitlist(false)} 
+        type="waitlist"
+      />
     </section>
   );
 };

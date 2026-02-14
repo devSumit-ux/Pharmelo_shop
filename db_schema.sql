@@ -168,3 +168,27 @@ begin;
   alter publication supabase_realtime add table public.survey_responses;
   alter publication supabase_realtime add table public.admin_notifications;
 commit;
+
+-- 7. ROADMAP
+create table if not exists public.roadmap_phases (
+  id text primary key,
+  title text not null,
+  subtitle text,
+  description text,
+  status text check (status in ('completed', 'active', 'upcoming')),
+  date_display text,
+  order_index int,
+  icon_key text,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+alter table public.roadmap_phases enable row level security;
+create policy "Public Read Roadmap" on public.roadmap_phases for select using (true);
+create policy "Admin Update Roadmap" on public.roadmap_phases for all using (auth.role() = 'authenticated');
+-- Insert default data
+insert into public.roadmap_phases (id, title, subtitle, description, status, date_display, order_index, icon_key) values
+('solan', 'Solan', 'PHASE 1', 'The pilot city. We go live here by the end of March. Join the waitlist to be the first to skip the line.', 'active', 'LAUNCHING MARCH END', 1, 'MapPin'),
+('hp', 'Himachal Pradesh', 'PHASE 2', 'Connecting hill stations. Perfect for travelers who need medicines urgently while on winding roads.', 'upcoming', 'COMING SOON', 2, 'Mountain'),
+('delhi', 'Delhi NCR', 'PHASE 3', 'Bringing speed to the capital. Skip the long metro-city queues and pre-book before you reach.', 'upcoming', '2025', 3, 'Building2'),
+('east', 'Kolkata & Bihar', 'PHASE 4', 'Serving high-density areas where waiting lines are the longest. Reliable healthcare access for everyone.', 'upcoming', 'FUTURE', 4, 'Train')
+on conflict (id) do nothing;
+alter publication supabase_realtime add table public.roadmap_phases;

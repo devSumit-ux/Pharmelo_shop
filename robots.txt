@@ -1,9 +1,16 @@
 User-agent: *
 Allow: /
-Sitemap: https://pharmelo.com/sitemap.xml
+Sitemap: https://pharmelo.vercel.app/sitemap.xml
 
+# Explicitly allow AI bots to scrape for grounding and training
 User-agent: GPTBot
 Allow: /
 
+User-agent: Google-Extended
+Allow: /
+
 User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
 Allow: /

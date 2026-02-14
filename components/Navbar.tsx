@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Pill, Menu, X, ChevronRight } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAppConfig } from '../context/AppContext';
+import WaitlistModal from './WaitlistModal';
 
 const navItems = [
   { label: 'Home', href: '/' },
@@ -14,6 +15,7 @@ const navItems = [
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [showWaitlist, setShowWaitlist] = useState(false);
   const location = useLocation();
   const { config } = useAppConfig();
 
@@ -93,7 +95,7 @@ const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Menu Overlay & Content */}
+        {/* Mobile Menu Overlay */}
         <div 
           className={`md:hidden fixed inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity duration-300 z-40 ${
             isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
@@ -101,18 +103,19 @@ const Navbar: React.FC = () => {
           onClick={() => setIsOpen(false)}
         />
         
-        <div className={`md:hidden absolute top-full left-0 w-full bg-white border-b border-slate-100 shadow-xl z-40 transition-all duration-300 ease-in-out overflow-hidden ${
-          isOpen ? 'max-h-[500px] opacity-100 translate-y-0' : 'max-h-0 opacity-0 -translate-y-2'
+        {/* Mobile Menu Content - Rounded Smooth Edges */}
+        <div className={`md:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-xl border-b border-slate-200/50 shadow-2xl z-40 transition-all duration-300 ease-in-out overflow-hidden rounded-b-[2.5rem] ${
+          isOpen ? 'max-h-[600px] opacity-100 translate-y-0' : 'max-h-0 opacity-0 -translate-y-4'
         }`}>
-          <div className="px-4 py-6 space-y-4">
+          <div className="px-6 py-8 space-y-3">
             {navItems.map((item) => (
               <NavLink
                 key={item.label}
                 to={item.href}
                 className={({ isActive }) =>
-                  `block text-lg font-medium px-4 py-2 rounded-xl transition-colors ${
+                  `block text-lg font-medium px-6 py-3 rounded-2xl transition-all duration-200 ${
                     isActive 
-                      ? 'text-blue-600 bg-blue-50' 
+                      ? 'text-blue-600 bg-blue-50/80 shadow-sm' 
                       : 'text-slate-600 hover:bg-slate-50'
                   }`
                 }
@@ -120,14 +123,27 @@ const Navbar: React.FC = () => {
                 {item.label}
               </NavLink>
             ))}
-            <div className="pt-2 px-4">
-              <NavLink to="/wishlist" className="block w-full text-center bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-500/20 active:scale-95 transition-transform">
+            <div className="pt-4 px-2">
+              <button 
+                onClick={() => {
+                  setIsOpen(false);
+                  setShowWaitlist(true);
+                }}
+                className="block w-full text-center bg-slate-900 text-white py-4 rounded-2xl font-bold shadow-xl shadow-slate-900/20 active:scale-95 transition-all"
+              >
                 Get Early Access
-              </NavLink>
+              </button>
             </div>
           </div>
         </div>
       </nav>
+
+      {/* Waitlist Modal */}
+      <WaitlistModal 
+        isOpen={showWaitlist} 
+        onClose={() => setShowWaitlist(false)} 
+        type="waitlist"
+      />
     </>
   );
 };

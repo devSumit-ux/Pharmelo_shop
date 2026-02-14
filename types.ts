@@ -38,3 +38,14 @@ export interface AdminStats {
   communityCount: number;
   feedbackCount: number;
 }
+
+export interface RoadmapPhase {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  status: 'completed' | 'active' | 'upcoming';
+  date_display: string;
+  order_index: number;
+  icon_key: string;
+}
