@@ -1,9 +1,30 @@
+
 import { UserRole } from "../types";
 import { GoogleGenAI } from "@google/genai";
+import { supabase } from "./supabaseClient";
 
-// Initialize Gemini Client
-// IMPORTANT: The API key is hardcoded here for the demo/landing page to work immediately without environment variables.
-const ai = new GoogleGenAI({ apiKey: "AIzaSyDLdlJvz_iXljXHaoAKj1Qg_0eHQr5k19g" });
+// Helper to initialize Gemini Client dynamically
+const getAiClient = async (): Promise<GoogleGenAI | null> => {
+  try {
+    // 1. Try to fetch from Supabase Config
+    const { data } = await supabase
+      .from('app_config')
+      .select('gemini_api_key')
+      .limit(1)
+      .single();
+
+    if (data?.gemini_api_key) {
+      return new GoogleGenAI({ apiKey: data.gemini_api_key });
+    }
+  } catch (e) {
+    console.error("Failed to fetch Gemini API Key from DB", e);
+  }
+
+  // 2. Return null or throw if no key is found. 
+  // The caller handles the fallback.
+  console.warn("Gemini API Key missing in app_config table.");
+  return null;
+};
 
 export const analyzeFeedback = async (
   feedback: string,
@@ -11,8 +32,14 @@ export const analyzeFeedback = async (
 ): Promise<{ analysis: string; sentiment: string; strategicAction: string }> => {
   
   try {
+    const ai = await getAiClient();
+    
+    if (!ai) {
+        throw new Error("AI Client not initialized (Missing Key)");
+    }
+
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash', // Updated to stable model for better reliability
+      model: 'gemini-2.0-flash', 
       contents: `Analyze the following feedback from a ${role} for a pharmacy pickup app called Pharmelo.
       Feedback: "${feedback}"
       
@@ -48,6 +75,9 @@ export const analyzeBatchFeedback = async (feedbacks: string[]) => {
   if (feedbacks.length === 0) return null;
 
   try {
+    const ai = await getAiClient();
+    if (!ai) throw new Error("Missing API Key");
+
     const prompt = `
       You are a Product Manager for Pharmelo. Analyze these ${feedbacks.length} user feedback submissions:
       ${feedbacks.map((f, i) => `(${i+1}) ${f}`).join('\n')}
@@ -60,7 +90,7 @@ export const analyzeBatchFeedback = async (feedbacks: string[]) => {
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash', // Using Flash for speed on batch data
+      model: 'gemini-2.0-flash', 
       contents: prompt,
       config: {
         responseMimeType: 'application/json'
@@ -76,6 +106,9 @@ export const analyzeBatchFeedback = async (feedbacks: string[]) => {
 
 export const generateNewsletter = async (stats: { waitlist: number, partners: number, community: number }) => {
   try {
+    const ai = await getAiClient();
+    if (!ai) throw new Error("Missing API Key");
+
     const prompt = `
       Act as the Communications Director for Pharmelo (a pharmacy pickup startup in Solan).
       Write a weekly update email for our community.

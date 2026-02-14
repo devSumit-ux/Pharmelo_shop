@@ -57,17 +57,27 @@ const Home: React.FC = () => {
             <div className="flex-1 w-full max-w-sm">
               <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 rotate-3 hover:rotate-0 transition-transform duration-500">
                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold">P</div>
+                    <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white border border-indigo-400">P</div>
                     <div>
                        <div className="font-bold">Pharmelo Weekly</div>
                        <div className="text-xs text-indigo-200">Saturday Edition</div>
                     </div>
                  </div>
-                 <div className="space-y-3">
-                    <div className="h-2 w-3/4 bg-white/20 rounded-full"></div>
-                    <div className="h-2 w-full bg-white/20 rounded-full"></div>
-                    <div className="h-2 w-5/6 bg-white/20 rounded-full"></div>
+                 
+                 {/* Replaced Skeleton with Actual Text Content */}
+                 <div className="space-y-3 bg-white/5 rounded-2xl p-4 border border-white/10">
+                    <div className="flex gap-2">
+                        <span className="text-lg">👋</span>
+                        <p className="text-sm font-medium text-indigo-50 leading-snug">
+                            Hey Solan! Did you know 3 new shops on Mall Road just joined?
+                        </p>
+                    </div>
+                    <div className="h-px bg-white/10 w-full my-2"></div>
+                    <p className="text-xs text-indigo-200 leading-relaxed">
+                        In this issue: Flu season tips for kids, how to spot genuine medicine, and our pharmacist of the month award! 🏆
+                    </p>
                  </div>
+
                  <div className="mt-6 pt-6 border-t border-white/10 flex justify-between items-center text-xs text-indigo-200">
                     <span>Read by 2,000+ locals</span>
                     <div className="flex -space-x-2">
