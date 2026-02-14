@@ -1,14 +1,39 @@
-
 import React, { ErrorInfo, ReactNode, Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 
-// DYNAMIC IMPORT: This is crucial. It isolates the App code execution.
-// If App.tsx or its imports (like geminiService) fail, it happens INSIDE the Suspense/ErrorBoundary,
-// not at the top level where it crashes the whole page before React mounts.
-const App = React.lazy(() => import('./App'));
+// Helper: Lazy Load with Retry
+// This catches "Failed to fetch dynamically imported module" errors and reloads the page once.
+const lazyWithRetry = (componentImport: () => Promise<any>) => {
+  return React.lazy(async () => {
+    const pageHasAlreadyBeenForceRefreshed = JSON.parse(
+      window.sessionStorage.getItem('page-has-been-force-refreshed') || 'false'
+    );
+
+    try {
+      const component = await componentImport();
+      window.sessionStorage.setItem('page-has-been-force-refreshed', 'false');
+      return component;
+    } catch (error: any) {
+      console.error("Lazy load failed for App:", error);
+      if (!pageHasAlreadyBeenForceRefreshed) {
+        // Assuming that the user is not on the latest version of the application.
+        // Let's refresh the page immediately.
+        window.sessionStorage.setItem('page-has-been-force-refreshed', 'true');
+        window.location.reload();
+        // Return a never-resolving promise to pause React rendering until reload completes
+        return new Promise(() => {}); 
+      }
+      // If we already reloaded and it still fails, throw the error to be caught by ErrorBoundary
+      throw error;
+    }
+  });
+};
+
+// DYNAMIC IMPORT with Retry
+const App = lazyWithRetry(() => import('./App'));
 
 interface ErrorBoundaryProps {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 interface ErrorBoundaryState {
@@ -18,9 +43,10 @@ interface ErrorBoundaryState {
 
 // Simple Error Boundary to catch React Rendering errors
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  public state: ErrorBoundaryState = { hasError: false, error: null };
+
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false, error: null };
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
