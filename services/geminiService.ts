@@ -3,8 +3,8 @@ import { GoogleGenAI } from "@google/genai";
 
 // Initialize Gemini Client
 // IMPORTANT: In a real production app, you should proxy these calls through your own backend 
-// to keep the API key secret. For this demo/landing page, we use it client-side.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// to keep the API key secret. For this demo/landing page, we use it client-side as requested.
+const ai = new GoogleGenAI({ apiKey: "AIzaSyDLdlJvz_iXljXHaoAKj1Qg_0eHQr5k19g" });
 
 export const analyzeFeedback = async (
   feedback: string,
@@ -13,7 +13,7 @@ export const analyzeFeedback = async (
   
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-2.0-flash', // Updated to stable model for better reliability
       contents: `Analyze the following feedback from a ${role} for a pharmacy pickup app called Pharmelo.
       Feedback: "${feedback}"
       
@@ -36,7 +36,7 @@ export const analyzeFeedback = async (
     console.error("Gemini API Error", e);
   }
 
-  // Fallback if API fails or key is missing
+  // Fallback if API fails
   const isNegative = feedback.toLowerCase().includes('wait') || feedback.toLowerCase().includes('slow') || feedback.toLowerCase().includes('stock');
   return {
     analysis: "We received your feedback. Our AI is currently offline, but our team has been notified.",
@@ -61,7 +61,7 @@ export const analyzeBatchFeedback = async (feedbacks: string[]) => {
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-preview', // Using Pro for deeper reasoning on batch data
+      model: 'gemini-2.0-flash', // Using Flash for speed on batch data
       contents: prompt,
       config: {
         responseMimeType: 'application/json'
@@ -98,7 +98,7 @@ export const generateNewsletter = async (stats: { waitlist: number, partners: nu
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-preview',
+      model: 'gemini-2.0-flash',
       contents: prompt,
       config: {
         responseMimeType: 'application/json'
