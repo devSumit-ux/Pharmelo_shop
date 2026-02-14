@@ -1,6 +1,11 @@
-import React, { ErrorInfo, ReactNode } from 'react';
+
+import React, { ErrorInfo, ReactNode, Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+
+// DYNAMIC IMPORT: This is crucial. It isolates the App code execution.
+// If App.tsx or its imports (like geminiService) fail, it happens INSIDE the Suspense/ErrorBoundary,
+// not at the top level where it crashes the whole page before React mounts.
+const App = React.lazy(() => import('./App'));
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -33,7 +38,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
           <div className="max-w-md rounded-3xl bg-white p-8 shadow-xl">
             <h2 className="mb-2 text-2xl font-bold text-slate-900">Something went wrong</h2>
             <p className="mb-6 text-slate-500 text-sm">Please refresh the page or check your connection.</p>
-            <pre className="mb-6 overflow-x-auto rounded-lg bg-red-50 p-4 text-xs text-red-600 text-left">
+            <pre className="mb-6 overflow-x-auto rounded-lg bg-red-50 p-4 text-xs text-red-600 text-left whitespace-pre-wrap">
               {this.state.error?.message}
             </pre>
             <button 
@@ -63,7 +68,13 @@ try {
   root.render(
     <React.StrictMode>
       <ErrorBoundary>
-        <App />
+        <Suspense fallback={
+          <div className="fixed inset-0 z-50 bg-slate-50 flex items-center justify-center">
+             <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        }>
+          <App />
+        </Suspense>
       </ErrorBoundary>
     </React.StrictMode>
   );

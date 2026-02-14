@@ -2,16 +2,44 @@
 import { UserRole } from "../types";
 import { GoogleGenAI } from "@google/genai";
 
-// Initialize Gemini with the environment variable directly
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// SAFE INITIALIZATION: Wrap in a function or check existence.
+// This prevents "API key not found" errors from crashing the entire app on load.
+let ai: GoogleGenAI | null = null;
+
+const getAI = () => {
+  if (ai) return ai;
+  
+  const apiKey = process.env.API_KEY;
+  if (!apiKey || apiKey.trim() === '') {
+    console.warn("Gemini API Key is missing. AI features will be disabled.");
+    return null;
+  }
+  
+  try {
+    ai = new GoogleGenAI({ apiKey });
+    return ai;
+  } catch (e) {
+    console.error("Failed to initialize GoogleGenAI client:", e);
+    return null;
+  }
+};
 
 export const analyzeFeedback = async (
   feedback: string,
   role: UserRole
 ): Promise<{ analysis: string; sentiment: string; strategicAction: string }> => {
   
+  const client = getAI();
+  if (!client) {
+    return {
+      analysis: "AI service unavailable (Missing API Key).",
+      sentiment: "neutral",
+      strategicAction: "System upgrade required to enable AI analysis."
+    };
+  }
+
   try {
-    const response = await ai.models.generateContent({
+    const response = await client.models.generateContent({
       model: 'gemini-3-flash-preview', 
       contents: `Analyze the following feedback from a ${role} for a pharmacy pickup app called Pharmelo.
       Feedback: "${feedback}"
@@ -46,6 +74,8 @@ export const analyzeFeedback = async (
 
 export const analyzeBatchFeedback = async (feedbacks: string[]) => {
   if (feedbacks.length === 0) return null;
+  const client = getAI();
+  if (!client) return null;
 
   try {
     const prompt = `
@@ -59,7 +89,7 @@ export const analyzeBatchFeedback = async (feedbacks: string[]) => {
       4. "recommended_features": Array of 3 specific features to build next.
     `;
 
-    const response = await ai.models.generateContent({
+    const response = await client.models.generateContent({
       model: 'gemini-3-flash-preview', 
       contents: prompt,
       config: {
@@ -75,6 +105,14 @@ export const analyzeBatchFeedback = async (feedbacks: string[]) => {
 };
 
 export const generateNewsletter = async (stats: { waitlist: number, partners: number, community: number }) => {
+  const client = getAI();
+  if (!client) {
+    return {
+      subject: "Pharmelo Weekly Update",
+      body: "We are growing fast! (AI Generation unavailable)"
+    };
+  }
+
   try {
     const prompt = `
       Act as the Communications Director for Pharmelo (a pharmacy pickup startup in Solan).
@@ -96,7 +134,7 @@ export const generateNewsletter = async (stats: { waitlist: number, partners: nu
       4. Output Format: JSON with 'subject' and 'body' (HTML friendly text).
     `;
 
-    const response = await ai.models.generateContent({
+    const response = await client.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: prompt,
       config: {
