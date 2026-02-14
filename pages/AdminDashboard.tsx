@@ -948,24 +948,6 @@ const AdminDashboard: React.FC = () => {
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
                     <h3 className="text-xl font-bold text-slate-900 mb-6">General Configuration</h3>
                     <div className="space-y-6">
-                        {/* API KEY SECTION */}
-                        <div className="bg-amber-50 p-6 rounded-2xl border border-amber-100">
-                           <div className="flex items-center gap-3 mb-4">
-                              <div className="p-2 bg-amber-100 rounded-lg text-amber-700"><Key size={20} /></div>
-                              <h4 className="font-bold text-amber-900">Gemini API Key</h4>
-                           </div>
-                           <p className="text-sm text-amber-800 mb-4">
-                             Update this key if you run out of credits. The new key will be applied immediately for all users.
-                           </p>
-                           <input 
-                              type="text" 
-                              value={settingsForm.gemini_api_key || ''}
-                              onChange={e => setSettingsForm({...settingsForm, gemini_api_key: e.target.value})}
-                              className="w-full bg-white border border-amber-200 rounded-xl px-4 py-3 text-sm font-mono text-slate-900 focus:outline-none focus:border-amber-500"
-                              placeholder="AIza..."
-                           />
-                        </div>
-
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2">App Name</label>
                             <input 

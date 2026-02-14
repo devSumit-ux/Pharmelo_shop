@@ -31,7 +31,6 @@ export interface AppConfig {
   instagram_url: string;
   linkedin_url: string;
   contact_email: string;
-  gemini_api_key?: string;
 }
 
 export interface AdminStats {

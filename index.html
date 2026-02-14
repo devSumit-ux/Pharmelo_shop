@@ -5,6 +5,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     
+    <!-- RESOURCE HINTS (Performance SEO) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" />
+    <link rel="preconnect" href="https://esm.sh" />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+
     <!-- PRIMARY SEO -->
     <title>Pharmelo | #1 Instant Pharmacy Network in Solan | Medicine Delivery & Pickup</title>
     <meta name="title" content="Pharmelo | #1 Instant Pharmacy Network in Solan | Medicine Delivery & Pickup">
@@ -23,6 +30,7 @@
     <meta name="revisit-after" content="1 days">
     <meta name="theme-color" content="#2563EB">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- VERIFICATION: GOOGLE SEARCH CONSOLE (HTML TAG METHOD) -->
     <meta name="google-site-verification" content="LMGBC1deGXPM3-YIPyy_LAghtqm6g3yhe9DMgILfLEg" />
@@ -59,14 +67,14 @@
     <!-- APPLE TOUCH ICON -->
     <link rel="apple-touch-icon" href="/logo.png">
 
-    <!-- JSON-LD STRUCTURED DATA (The Secret Sauce for Ranking) -->
+    <!-- JSON-LD STRUCTURED DATA (Advanced SEO) -->
     <script type="application/ld+json">
     [
       {
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "Pharmelo",
-        "alternateName": ["Medzo", "Pharmelo Solan"],
+        "alternateName": ["Medzo", "Pharmelo Solan", "Pharmelo Himachal"],
         "url": "https://pharmelo.vercel.app",
         "logo": "https://pharmelo.vercel.app/logo.png",
         "foundingDate": "2024",
@@ -79,7 +87,7 @@
           "telephone": "+91-9876543210",
           "contactType": "customer service",
           "email": "hello@pharmelo.com",
-          "areaServed": ["IN-HP", "Solan"],
+          "areaServed": ["IN-HP", "Solan", "Shimla"],
           "availableLanguage": ["en", "hi"]
         },
         "sameAs": [
@@ -87,6 +95,39 @@
           "https://www.linkedin.com/company/pharmelo",
           "https://www.instagram.com/pharmelo"
         ]
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "serviceType": "Pharmacy Pickup & Delivery",
+        "provider": {
+          "@id": "https://pharmelo.vercel.app"
+        },
+        "areaServed": {
+          "@type": "City",
+          "name": "Solan",
+          "sameAs": "https://en.wikipedia.org/wiki/Solan"
+        },
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Pharmacy Services",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Medicine Order Pickup"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Prescription Digitization"
+              }
+            }
+          ]
+        }
       },
       {
         "@context": "https://schema.org",
@@ -102,20 +143,48 @@
       },
       {
         "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "Pharmelo",
-        "operatingSystem": "Web, Android",
-        "applicationCategory": "MedicalApplication",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "INR"
-        },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.9",
-          "ratingCount": "150"
-        }
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How do I order medicine online in Solan?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "You can use the Pharmelo (Medzo) app to search for medicines or upload your prescription. We connect you with local chemists for instant pickup or delivery."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is Pharmelo available in Himachal Pradesh?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, we are currently live in Solan and expanding to Shimla and other parts of Himachal Pradesh soon."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I check medicine stock before visiting the shop?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, Pharmelo provides real-time inventory visibility so you never have to visit a shop that is out of stock."
+            }
+          }
+        ]
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [{
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://pharmelo.vercel.app/"
+        },{
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Pharmacy Owners",
+          "item": "https://pharmelo.vercel.app/owners"
+        }]
       },
       {
         "@context": "https://schema.org",
