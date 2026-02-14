@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Users, Store, MessageSquare, Settings, 
   LogOut, TrendingUp, Sparkles, Loader2, Save, ExternalLink, AlertTriangle,
   ChevronRight, Search, Bell, Check, X, Info, ClipboardList, PenLine, Mail, Send,
-  Zap, Clock, Play, Map, Key
+  Zap, Clock, Play, Map, Key, Download, FileText, Printer
 } from 'lucide-react';
 import { useAppConfig } from '../context/AppContext';
 import { analyzeBatchFeedback, generateNewsletter } from '../services/geminiService';
@@ -166,22 +166,22 @@ const AdminDashboard: React.FC = () => {
       await fetchRoadmap();
 
       if (wData.total) {
-          const { data } = await supabase.from('waitlist_users').select('*').order('created_at', { ascending: false }).limit(50);
+          const { data } = await supabase.from('waitlist_users').select('*').order('created_at', { ascending: false }).limit(100);
           if (data) setWaitlist(data);
       }
       
       if (pData.total) {
-          const { data } = await supabase.from('early_partners').select('*').order('created_at', { ascending: false }).limit(50);
+          const { data } = await supabase.from('early_partners').select('*').order('created_at', { ascending: false }).limit(100);
           if (data) setPartners(data);
       }
 
       if (fData.total) {
-          const { data } = await supabase.from('feedback_submissions').select('*').order('created_at', { ascending: false }).limit(50);
+          const { data } = await supabase.from('feedback_submissions').select('*').order('created_at', { ascending: false }).limit(100);
           if (data) setFeedback(data);
       }
 
       if (sData.total) {
-          const { data } = await supabase.from('survey_responses').select('*').order('created_at', { ascending: false }).limit(50);
+          const { data } = await supabase.from('survey_responses').select('*').order('created_at', { ascending: false }).limit(100);
           if (data) setSurveys(data);
       }
 
@@ -198,6 +198,82 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  // --- EXPORT UTILITIES ---
+  
+  const exportToCSV = (data: any[], filename: string) => {
+    if (!data.length) return;
+    
+    // Get headers
+    const headers = Object.keys(data[0]);
+    
+    // Create CSV content
+    const csvContent = [
+      headers.join(','), // Header row
+      ...data.map(row => 
+        headers.map(header => {
+          const cell = row[header];
+          // Handle objects, arrays, or commas in strings
+          if (typeof cell === 'object') return `"${JSON.stringify(cell).replace(/"/g, '""')}"`;
+          return `"${String(cell).replace(/"/g, '""')}"`;
+        }).join(',')
+      )
+    ].join('\n');
+
+    // Create download link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${filename}_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const printDataAsPDF = (title: string, data: any[]) => {
+    if (!data.length) return;
+    
+    // Flatten data if needed (basic flattening)
+    const flatData = data.map(row => {
+        const newRow: any = {};
+        Object.keys(row).forEach(key => {
+            if (typeof row[key] === 'object' && row[key] !== null) {
+                newRow[key] = JSON.stringify(row[key]);
+            } else {
+                newRow[key] = row[key];
+            }
+        });
+        return newRow;
+    });
+
+    const headers = Object.keys(flatData[0]);
+
+    const printWindow = window.open('', '', 'height=600,width=800');
+    if (!printWindow) return;
+
+    printWindow.document.write('<html><head><title>Print Report</title>');
+    printWindow.document.write('<style>body{font-family:sans-serif; padding:20px;} table{width:100%; border-collapse:collapse; font-size:12px;} th, td{border:1px solid #ddd; padding:8px; text-align:left;} th{background-color:#f8f9fa;} h1{color:#0f172a; margin-bottom:20px;}</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write(`<h1>${title}</h1>`);
+    printWindow.document.write('<table><thead><tr>');
+    headers.forEach(h => printWindow.document.write(`<th>${h.toUpperCase()}</th>`));
+    printWindow.document.write('</tr></thead><tbody>');
+    
+    flatData.forEach(row => {
+        printWindow.document.write('<tr>');
+        headers.forEach(h => {
+            const val = row[h] !== undefined && row[h] !== null ? row[h] : '';
+            printWindow.document.write(`<td>${val}</td>`);
+        });
+        printWindow.document.write('</tr>');
+    });
+    
+    printWindow.document.write('</tbody></table>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/admin');
@@ -207,7 +283,6 @@ const AdminDashboard: React.FC = () => {
       try {
           const { error } = await supabase.from('roadmap_phases').update(updates).eq('id', id);
           if (error) throw error;
-          // Optimistic update
           setRoadmap(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
       } catch (e: any) {
           alert("Failed to update phase: " + e.message);
@@ -458,7 +533,7 @@ const AdminDashboard: React.FC = () => {
            </div>
         </div>
 
-        {/* ... [Overview, Waitlist, Partners, Roadmap, Feedback, Campaigns tabs remain same] ... */}
+        {/* OVERVIEW TAB */}
         {activeTab === 'overview' && (
           <div className="animate-fade-in space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -487,7 +562,385 @@ const AdminDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* ... (Other tabs code omitted for brevity as they are unchanged) ... */}
+        {/* WAITLIST TAB */}
+        {activeTab === 'waitlist' && (
+          <div className="animate-fade-in">
+            <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+                <div>
+                    <h3 className="font-bold text-slate-900">Waitlist Users</h3>
+                    <div className="text-sm text-slate-500">Total: {metrics.waitlist.total}</div>
+                </div>
+                <div className="flex gap-2">
+                    <button onClick={() => exportToCSV(waitlist, 'waitlist')} className="text-xs font-bold text-slate-600 border border-slate-200 px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center gap-2">
+                        <Download size={14} /> CSV
+                    </button>
+                    <button onClick={() => printDataAsPDF('Waitlist Users', waitlist)} className="text-xs font-bold text-slate-600 border border-slate-200 px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center gap-2">
+                        <Printer size={14} /> PDF
+                    </button>
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-slate-50 text-slate-500 font-bold">
+                    <tr>
+                      <th className="p-4">Email</th>
+                      <th className="p-4">Source</th>
+                      <th className="p-4">Joined At</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {waitlist.map((user) => (
+                      <tr key={user.id} className="hover:bg-slate-50">
+                        <td className="p-4 font-medium text-slate-900">{user.email}</td>
+                        <td className="p-4 text-slate-500">{user.source || 'Website'}</td>
+                        <td className="p-4 text-slate-500">{new Date(user.created_at).toLocaleDateString()}</td>
+                      </tr>
+                    ))}
+                    {waitlist.length === 0 && (
+                      <tr><td colSpan={3} className="p-8 text-center text-slate-400">No users yet.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* PARTNERS TAB */}
+        {activeTab === 'partners' && (
+          <div className="animate-fade-in">
+            <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+                <div>
+                    <h3 className="font-bold text-slate-900">Partner Applications</h3>
+                    <div className="text-sm text-slate-500">Total: {metrics.partners.total}</div>
+                </div>
+                <div className="flex gap-2">
+                    <button onClick={() => exportToCSV(partners, 'partners')} className="text-xs font-bold text-slate-600 border border-slate-200 px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center gap-2">
+                        <Download size={14} /> CSV
+                    </button>
+                    <button onClick={() => printDataAsPDF('Partner Applications', partners)} className="text-xs font-bold text-slate-600 border border-slate-200 px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center gap-2">
+                        <Printer size={14} /> PDF
+                    </button>
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-slate-50 text-slate-500 font-bold">
+                    <tr>
+                      <th className="p-4">Pharmacy</th>
+                      <th className="p-4">Owner</th>
+                      <th className="p-4">Contact</th>
+                      <th className="p-4">License</th>
+                      <th className="p-4">Address</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {partners.map((p) => (
+                      <tr key={p.id} className="hover:bg-slate-50">
+                        <td className="p-4">
+                          <div className="font-bold text-slate-900">{p.pharmacy_name}</div>
+                        </td>
+                        <td className="p-4 text-slate-600">{p.owner_name}</td>
+                        <td className="p-4">
+                          <div className="text-slate-900">{p.phone}</div>
+                          <div className="text-xs text-slate-400">{p.email}</div>
+                        </td>
+                        <td className="p-4 text-slate-600 font-mono text-xs">{p.license_no}</td>
+                        <td className="p-4 text-slate-500 max-w-xs truncate">{p.address}</td>
+                      </tr>
+                    ))}
+                    {partners.length === 0 && (
+                      <tr><td colSpan={5} className="p-8 text-center text-slate-400">No applications yet.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* FEEDBACK TAB */}
+        {activeTab === 'feedback' && (
+          <div className="animate-fade-in space-y-6">
+            {/* Controls */}
+            <div className="flex justify-between items-center">
+                <div className="flex bg-white p-1 rounded-xl border border-slate-200">
+                    <button onClick={() => setFeedbackView('surveys')} className={`px-4 py-2 rounded-lg text-sm font-bold ${feedbackView === 'surveys' ? 'bg-blue-600 text-white' : 'text-slate-500'}`}>Surveys</button>
+                    <button onClick={() => setFeedbackView('notes')} className={`px-4 py-2 rounded-lg text-sm font-bold ${feedbackView === 'notes' ? 'bg-blue-600 text-white' : 'text-slate-500'}`}>Direct Notes</button>
+                </div>
+                
+                <div className="flex gap-2">
+                    <button 
+                        onClick={() => exportToCSV(feedbackView === 'surveys' ? surveys : feedback, `feedback_${feedbackView}`)}
+                        className="text-xs font-bold text-slate-600 bg-white border border-slate-200 px-3 py-2.5 rounded-xl hover:bg-slate-50 flex items-center gap-2"
+                    >
+                        <Download size={14} /> CSV
+                    </button>
+                    <button 
+                        onClick={() => printDataAsPDF(`${feedbackView === 'surveys' ? 'Survey Responses' : 'Feedback Notes'}`, feedbackView === 'surveys' ? surveys : feedback)}
+                        className="text-xs font-bold text-slate-600 bg-white border border-slate-200 px-3 py-2.5 rounded-xl hover:bg-slate-50 flex items-center gap-2"
+                    >
+                        <Printer size={14} /> PDF
+                    </button>
+                    <button 
+                        onClick={runAiAnalysis}
+                        disabled={analyzing}
+                        className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition-all disabled:opacity-70"
+                    >
+                        {analyzing ? <Loader2 className="animate-spin h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
+                        Analyze with Gemini
+                    </button>
+                </div>
+            </div>
+
+            {/* AI Result Section */}
+            {aiAnalysis && (
+                <div className="bg-indigo-900 text-white p-8 rounded-3xl relative overflow-hidden shadow-xl animate-slide-up">
+                    <div className="relative z-10">
+                        <h3 className="text-2xl font-bold mb-4 flex items-center gap-2"><Sparkles className="text-yellow-400"/> AI Executive Summary</h3>
+                        <p className="text-indigo-200 text-lg mb-6 max-w-2xl">{aiAnalysis.executive_summary}</p>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="bg-white/10 p-5 rounded-2xl backdrop-blur-sm">
+                                <h4 className="font-bold text-indigo-300 text-xs uppercase mb-3">Top Themes</h4>
+                                <ul className="space-y-2">
+                                    {aiAnalysis.top_themes?.map((t: string, i: number) => (
+                                        <li key={i} className="flex items-center gap-2 text-sm font-medium"><div className="w-1.5 h-1.5 bg-yellow-400 rounded-full"/> {t}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div className="bg-white/10 p-5 rounded-2xl backdrop-blur-sm">
+                                <h4 className="font-bold text-indigo-300 text-xs uppercase mb-3">Sentiment</h4>
+                                <div className="flex items-end gap-2 h-16 mb-2">
+                                     <div style={{height: aiAnalysis.sentiment_breakdown?.positive || '33%'}} className="flex-1 bg-green-500 rounded-t-lg opacity-80"></div>
+                                     <div style={{height: aiAnalysis.sentiment_breakdown?.neutral || '33%'}} className="flex-1 bg-gray-400 rounded-t-lg opacity-80"></div>
+                                     <div style={{height: aiAnalysis.sentiment_breakdown?.negative || '33%'}} className="flex-1 bg-red-500 rounded-t-lg opacity-80"></div>
+                                </div>
+                                <div className="flex justify-between text-xs text-indigo-200">
+                                     <span>Pos</span><span>Neu</span><span>Neg</span>
+                                </div>
+                            </div>
+                            <div className="bg-white/10 p-5 rounded-2xl backdrop-blur-sm border border-white/10">
+                                <h4 className="font-bold text-indigo-300 text-xs uppercase mb-3">Recommended Actions</h4>
+                                <ul className="space-y-2">
+                                     {aiAnalysis.recommended_features?.map((f: string, i: number) => (
+                                        <li key={i} className="flex items-center gap-2 text-sm font-bold text-white"><Check size={14} className="text-green-400"/> {f}</li>
+                                     ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* List */}
+            <div className="grid grid-cols-1 gap-4">
+                {feedbackView === 'surveys' ? (
+                     surveys.length === 0 ? <div className="text-center p-12 text-slate-400">No surveys found.</div> :
+                     surveys.map(s => (
+                         <div key={s.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                            <div className="flex justify-between mb-4">
+                                <span className="text-xs font-bold uppercase text-slate-400">Survey Response</span>
+                                <span className="text-xs text-slate-400">{new Date(s.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2 mb-4">
+                                 {Object.entries(s.answers).map(([key, val]: any) => (
+                                     key !== 'additional_comments' && (
+                                         <span key={key} className="px-3 py-1 bg-slate-50 border border-slate-100 rounded-lg text-xs font-medium text-slate-600">
+                                             <span className="font-bold text-slate-400 uppercase mr-1">{key.replace(/_/g, ' ')}:</span> {val}
+                                         </span>
+                                     )
+                                 ))}
+                            </div>
+                            {s.answers.additional_comments && (
+                                <div className="bg-amber-50 p-3 rounded-xl text-sm text-amber-900 border border-amber-100">
+                                    <span className="font-bold block text-xs text-amber-700 uppercase mb-1">Comment</span>
+                                    "{s.answers.additional_comments}"
+                                </div>
+                            )}
+                         </div>
+                     ))
+                ) : (
+                     feedback.length === 0 ? <div className="text-center p-12 text-slate-400">No feedback notes found.</div> :
+                     feedback.map(f => (
+                         <div key={f.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex gap-4">
+                            <div className={`p-3 rounded-xl h-fit ${f.role === 'CONSUMER' ? 'bg-blue-50 text-blue-600' : 'bg-indigo-50 text-indigo-600'}`}>
+                                {f.role === 'CONSUMER' ? <Users size={20}/> : <Store size={20}/>}
+                            </div>
+                            <div>
+                                <div className="text-xs font-bold text-slate-400 uppercase mb-1">{f.role} • {new Date(f.created_at).toLocaleDateString()}</div>
+                                <p className="text-slate-800 font-medium leading-relaxed">"{f.content}"</p>
+                            </div>
+                         </div>
+                     ))
+                )}
+            </div>
+          </div>
+        )}
+
+        {/* CAMPAIGNS TAB */}
+        {activeTab === 'campaigns' && (
+          <div className="animate-fade-in grid grid-cols-1 lg:grid-cols-2 gap-8">
+             {/* Generator */}
+             <div className="space-y-6">
+                <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+                   <div className="flex items-center gap-3 mb-6">
+                       <div className="bg-indigo-100 p-2 rounded-xl text-indigo-600"><Sparkles size={24}/></div>
+                       <h3 className="text-xl font-bold text-slate-900">AI Newsletter Pilot</h3>
+                   </div>
+                   <p className="text-slate-500 mb-6">Generate and send weekly updates to the waitlist automatically.</p>
+                   
+                   <button 
+                     onClick={handleGenerateNewsletter}
+                     disabled={generatingEmail}
+                     className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-indigo-600 transition-colors shadow-lg disabled:opacity-70 flex justify-center gap-2 items-center"
+                   >
+                     {generatingEmail ? <Loader2 className="animate-spin"/> : <Zap size={18}/>}
+                     Generate This Week's Update
+                   </button>
+
+                   <div className="mt-4 pt-4 border-t border-slate-100 text-center">
+                      <button onClick={handleTestAutomation} disabled={testingAutomation} className="text-xs font-bold text-slate-400 hover:text-slate-600 flex items-center justify-center gap-2 w-full">
+                         {testingAutomation ? <Loader2 className="animate-spin w-3 h-3"/> : <Play size={12}/>} Test Trigger Automation (Edge Function)
+                      </button>
+                   </div>
+                </div>
+
+                {newsletterDraft && (
+                    <div className="bg-white border border-indigo-100 rounded-3xl overflow-hidden shadow-xl animate-fade-in ring-4 ring-indigo-50">
+                       <div className="bg-indigo-600 px-6 py-4 flex justify-between items-center text-white">
+                           <span className="font-bold text-sm">Preview</span>
+                           <button onClick={() => setNewsletterDraft(null)} className="hover:bg-indigo-500 p-1 rounded"><X size={16}/></button>
+                       </div>
+                       <div className="p-6">
+                           <div className="mb-4">
+                               <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Subject</label>
+                               <input 
+                                   value={newsletterDraft.subject} 
+                                   onChange={e => setNewsletterDraft({...newsletterDraft, subject: e.target.value})}
+                                   className="w-full font-bold text-lg text-slate-900 border-b border-slate-200 pb-2 focus:outline-none focus:border-indigo-500"
+                               />
+                           </div>
+                           <div className="mb-6">
+                               <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Body Content</label>
+                               <textarea 
+                                   value={newsletterDraft.body} 
+                                   onChange={e => setNewsletterDraft({...newsletterDraft, body: e.target.value})}
+                                   className="w-full h-48 text-slate-900 text-sm leading-relaxed border border-slate-100 rounded-xl p-3 focus:outline-none focus:border-indigo-500 resize-none"
+                               />
+                           </div>
+                           <button 
+                               onClick={handleSendNewsletter}
+                               disabled={sendingEmail}
+                               className="w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 shadow-lg shadow-green-600/20 flex justify-center items-center gap-2"
+                           >
+                               {sendingEmail ? <Loader2 className="animate-spin"/> : <Send size={18}/>}
+                               Send to {metrics.waitlist.total + metrics.community.total} Users
+                           </button>
+                       </div>
+                    </div>
+                )}
+             </div>
+
+             {/* History */}
+             <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden h-fit">
+                 <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+                     <h3 className="font-bold text-slate-900">Campaign History</h3>
+                     <div className="flex gap-2">
+                        <button onClick={() => exportToCSV(pastCampaigns, 'campaign_history')} className="text-xs font-bold text-slate-500 hover:bg-slate-100 p-2 rounded-lg"><Download size={16}/></button>
+                     </div>
+                 </div>
+                 <div className="divide-y divide-slate-100">
+                     {pastCampaigns.length === 0 ? <div className="p-8 text-center text-slate-400 text-sm">No campaigns sent yet.</div> : 
+                       pastCampaigns.map(c => (
+                           <div key={c.id} className="p-6 hover:bg-slate-50 transition-colors">
+                               <div className="flex justify-between mb-2">
+                                   <span className="text-xs font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded">{c.status}</span>
+                                   <span className="text-xs text-slate-400">{new Date(c.sent_at).toLocaleDateString()}</span>
+                               </div>
+                               <h4 className="font-bold text-slate-900 text-sm mb-1">{c.subject}</h4>
+                               <div className="text-xs text-slate-500">Recipients: {c.recipient_count}</div>
+                           </div>
+                       ))
+                     }
+                 </div>
+             </div>
+          </div>
+        )}
+        
+        {/* ROADMAP CONFIG TAB */}
+        {activeTab === 'roadmap' && (
+          <div className="animate-fade-in space-y-6">
+             <div className="bg-white p-6 rounded-2xl border border-slate-200 flex justify-between items-center">
+                <div>
+                    <h3 className="font-bold text-slate-900 mb-1">Roadmap Configuration</h3>
+                    <p className="text-slate-500 text-sm">Update the phases shown on the public roadmap page in real-time.</p>
+                </div>
+                <div className="flex gap-2">
+                    <button onClick={() => exportToCSV(roadmap, 'roadmap_config')} className="text-xs font-bold text-slate-600 border border-slate-200 px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center gap-2">
+                        <Download size={14} /> CSV
+                    </button>
+                    <button onClick={() => printDataAsPDF('Roadmap Config', roadmap)} className="text-xs font-bold text-slate-600 border border-slate-200 px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center gap-2">
+                        <Printer size={14} /> PDF
+                    </button>
+                </div>
+             </div>
+             
+             <div className="grid grid-cols-1 gap-4">
+                {roadmap.map((phase) => (
+                   <div key={phase.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                      <div className="flex justify-between items-start gap-4 mb-4">
+                          <div className="flex-1">
+                              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Title</label>
+                              <input 
+                                  value={phase.title} 
+                                  onChange={e => updateRoadmapPhase(phase.id, { title: e.target.value })}
+                                  className="font-bold text-lg text-slate-900 w-full border-b border-slate-200 bg-slate-50 rounded-lg px-2 py-1 focus:border-blue-500 focus:outline-none transition-colors"
+                              />
+                          </div>
+                          <div className="w-40">
+                              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Status</label>
+                              <select 
+                                  value={phase.status}
+                                  onChange={e => updateRoadmapPhase(phase.id, { status: e.target.value as any })}
+                                  className={`w-full text-xs font-bold px-3 py-2 rounded-lg border ${
+                                     phase.status === 'completed' ? 'bg-green-50 text-green-700 border-green-200' :
+                                     phase.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                     'bg-slate-50 text-slate-900 border-slate-200'
+                                  }`}
+                              >
+                                  <option value="upcoming">Upcoming</option>
+                                  <option value="active">Active</option>
+                                  <option value="completed">Completed</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Description</label>
+                              <textarea 
+                                  value={phase.description} 
+                                  onChange={e => updateRoadmapPhase(phase.id, { description: e.target.value })}
+                                  rows={2}
+                                  className="w-full text-sm text-slate-900 bg-white rounded-lg p-3 border border-slate-200 focus:outline-none focus:border-blue-500"
+                              />
+                          </div>
+                          <div>
+                              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Display Date/Label</label>
+                              <input 
+                                  value={phase.date_display} 
+                                  onChange={e => updateRoadmapPhase(phase.id, { date_display: e.target.value })}
+                                  className="w-full text-sm text-slate-900 bg-white rounded-lg p-3 border border-slate-200 focus:outline-none focus:border-blue-500"
+                              />
+                          </div>
+                      </div>
+                   </div>
+                ))}
+             </div>
+          </div>
+        )}
         
         {/* SETTINGS TAB */}
         {activeTab === 'settings' && (
@@ -508,7 +961,7 @@ const AdminDashboard: React.FC = () => {
                               type="text" 
                               value={settingsForm.gemini_api_key || ''}
                               onChange={e => setSettingsForm({...settingsForm, gemini_api_key: e.target.value})}
-                              className="w-full bg-white border border-amber-200 rounded-xl px-4 py-3 text-sm font-mono text-slate-700 focus:outline-none focus:border-amber-500"
+                              className="w-full bg-white border border-amber-200 rounded-xl px-4 py-3 text-sm font-mono text-slate-900 focus:outline-none focus:border-amber-500"
                               placeholder="AIza..."
                            />
                         </div>
@@ -519,7 +972,7 @@ const AdminDashboard: React.FC = () => {
                                 type="text" 
                                 value={settingsForm.app_name}
                                 onChange={e => setSettingsForm({...settingsForm, app_name: e.target.value})}
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
+                                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:border-blue-500"
                             />
                         </div>
                         <div>
@@ -528,7 +981,7 @@ const AdminDashboard: React.FC = () => {
                                 type="text" 
                                 value={settingsForm.logo_url}
                                 onChange={e => setSettingsForm({...settingsForm, logo_url: e.target.value})}
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
+                                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:border-blue-500"
                             />
                         </div>
                         <div>
@@ -537,7 +990,7 @@ const AdminDashboard: React.FC = () => {
                                 type="email" 
                                 value={settingsForm.contact_email}
                                 onChange={e => setSettingsForm({...settingsForm, contact_email: e.target.value})}
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
+                                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:border-blue-500"
                             />
                         </div>
 
@@ -550,7 +1003,7 @@ const AdminDashboard: React.FC = () => {
                                         type="text" 
                                         value={settingsForm.twitter_url}
                                         onChange={e => setSettingsForm({...settingsForm, twitter_url: e.target.value})}
-                                        className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-500"
+                                        className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-900 focus:outline-none focus:border-blue-500"
                                     />
                                 </div>
                                 <div className="flex items-center gap-4">
@@ -559,7 +1012,7 @@ const AdminDashboard: React.FC = () => {
                                         type="text" 
                                         value={settingsForm.instagram_url}
                                         onChange={e => setSettingsForm({...settingsForm, instagram_url: e.target.value})}
-                                        className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-500"
+                                        className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-900 focus:outline-none focus:border-blue-500"
                                     />
                                 </div>
                                 <div className="flex items-center gap-4">
@@ -568,7 +1021,7 @@ const AdminDashboard: React.FC = () => {
                                         type="text" 
                                         value={settingsForm.linkedin_url}
                                         onChange={e => setSettingsForm({...settingsForm, linkedin_url: e.target.value})}
-                                        className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-500"
+                                        className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-900 focus:outline-none focus:border-blue-500"
                                     />
                                 </div>
                             </div>

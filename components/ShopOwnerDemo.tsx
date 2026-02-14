@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   LayoutDashboard, ShoppingCart, Package, Smartphone, 
@@ -252,7 +253,7 @@ const ShopOwnerDemo: React.FC = () => {
               <StoreIcon className="text-white h-5 w-5" />
             </div>
             <div>
-              <h1 className="font-bold text-slate-900 text-lg leading-none">Medzo Shop</h1>
+              <h1 className="font-bold text-slate-900 text-lg leading-none">Pharmelo Shop</h1>
               <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full mt-1 inline-block">VERIFIED</span>
             </div>
           </div>
@@ -801,7 +802,7 @@ const ShopOwnerDemo: React.FC = () => {
                       <div className="grid grid-cols-1 gap-4">
                          <div>
                             <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Pharmacy Name</label>
-                            <input type="text" defaultValue="Medzo Shop Solan" className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium" />
+                            <input type="text" defaultValue="Pharmelo Shop Solan" className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium" />
                          </div>
                          <div className="grid grid-cols-2 gap-4">
                             <div>
