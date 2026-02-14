@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import StickyCTA from './components/StickyCTA';
@@ -147,6 +148,7 @@ const AppContent = () => {
       </main>
       {!isFullScreenRoute && <Footer />}
       {!isFullScreenRoute && <StickyCTA />}
+      <SpeedInsights />
     </div>
   );
 };
