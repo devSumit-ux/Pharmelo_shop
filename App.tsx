@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import StickyCTA from './components/StickyCTA';
@@ -156,6 +157,7 @@ function App() {
     <AppProvider>
       <Router>
         <AppContent />
+        <Analytics />
       </Router>
     </AppProvider>
   );
