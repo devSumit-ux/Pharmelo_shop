@@ -1,4 +1,4 @@
-import React, { ErrorInfo, ReactNode, Suspense } from 'react';
+import React, { Component, ErrorInfo, ReactNode, Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 
 // Helper: Lazy Load with Retry
@@ -42,7 +42,7 @@ interface ErrorBoundaryState {
 }
 
 // Simple Error Boundary to catch React Rendering errors
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   public state: ErrorBoundaryState = { hasError: false, error: null };
 
   constructor(props: ErrorBoundaryProps) {

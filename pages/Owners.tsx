@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { TrendingUp, Shield, Users, Store, CheckCircle2, Laptop } from 'lucide-react';
+import { TrendingUp, Shield, Users, Store, CheckCircle2, Laptop, BookOpen, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Owners: React.FC = () => {
@@ -88,6 +89,11 @@ const Owners: React.FC = () => {
                   </li>
                 ))}
              </ul>
+             <div className="mt-8 pt-8 border-t border-blue-200/50">
+                <Link to="/documentation" className="flex items-center gap-2 text-blue-700 font-bold hover:gap-3 transition-all">
+                   <BookOpen size={20} /> Read Partner Documentation <ArrowRight size={16} />
+                </Link>
+             </div>
            </div>
            
            <div className="flex-1 w-full max-w-md relative">

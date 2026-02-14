@@ -5,7 +5,7 @@ import {
   CreditCard, Truck, Upload, Settings, Search,
   Menu, X, Plus, Minus, Trash2, ArrowLeft,
   Clock, AlertTriangle, DollarSign, User, Sparkles,
-  FileText, Download, CheckCircle, UploadCloud, ChevronDown, MoreHorizontal
+  FileText, Download, CheckCircle, UploadCloud, ChevronDown, MoreHorizontal, Shield
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -55,7 +55,7 @@ const IMPORT_HISTORY = [
   { id: 2, filename: 'new_stock_jan.xlsx', date: '01 Jan 2024, 09:30 AM', records: 120, status: 'Success' },
 ];
 
-type Tab = 'dashboard' | 'pos' | 'inventory' | 'orders' | 'purchases' | 'suppliers' | 'import' | 'settings';
+type Tab = 'dashboard' | 'pos' | 'inventory' | 'orders' | 'purchases' | 'suppliers' | 'import' | 'settings' | 'documents';
 
 const SalesChart = () => {
   const max = Math.max(...SALES_DATA.map(d => d.value));
@@ -272,6 +272,7 @@ const ShopOwnerDemo: React.FC = () => {
           
           <SidebarItem id="purchases" icon={Truck} label="Purchases" />
           <SidebarItem id="suppliers" icon={User} label="Suppliers" />
+          <SidebarItem id="documents" icon={FileText} label="My Documents" />
           <SidebarItem id="import" icon={Upload} label="Import Data" />
           <SidebarItem id="settings" icon={Settings} label="Settings" />
 
@@ -729,6 +730,79 @@ const ShopOwnerDemo: React.FC = () => {
              </div>
           )}
 
+          {/* DOCUMENTS TAB - NEW */}
+          {activeTab === 'documents' && (
+             <div className="max-w-4xl animate-fade-in space-y-6">
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 flex justify-between items-center">
+                   <div>
+                      <h3 className="font-bold text-slate-900 mb-1">Legal Documents</h3>
+                      <p className="text-slate-500 text-sm">Manage your pharmacy licenses and business registrations.</p>
+                   </div>
+                   <button className="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
+                      <Upload size={16} /> Upload New
+                   </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                   {/* License Card */}
+                   <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                      <div className="absolute top-0 right-0 p-4 opacity-10"><Shield size={64} className="text-emerald-600"/></div>
+                      <div className="flex items-center gap-3 mb-4">
+                         <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600">
+                            <FileText size={20} />
+                         </div>
+                         <div>
+                            <h4 className="font-bold text-slate-900">Drug License (Form 20/21)</h4>
+                            <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">VERIFIED</span>
+                         </div>
+                      </div>
+                      <div className="space-y-2 text-sm text-slate-600 mb-4">
+                         <div className="flex justify-between border-b border-slate-50 pb-2">
+                            <span className="text-slate-400">License No</span>
+                            <span className="font-mono font-bold">DL-19284/HP</span>
+                         </div>
+                         <div className="flex justify-between border-b border-slate-50 pb-2">
+                            <span className="text-slate-400">Valid Until</span>
+                            <span className="font-bold">31 Dec 2025</span>
+                         </div>
+                         <div className="flex justify-between">
+                            <span className="text-slate-400">Last Verified</span>
+                            <span>14 Feb 2024</span>
+                         </div>
+                      </div>
+                      <div className="flex gap-2">
+                         <button className="flex-1 bg-slate-50 text-slate-700 py-2 rounded-lg text-xs font-bold hover:bg-slate-100 border border-slate-200">View File</button>
+                         <button className="flex-1 bg-slate-50 text-slate-700 py-2 rounded-lg text-xs font-bold hover:bg-slate-100 border border-slate-200">Renew</button>
+                      </div>
+                   </div>
+
+                   {/* GST Card */}
+                   <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                      <div className="flex items-center gap-3 mb-4">
+                         <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
+                            <FileText size={20} />
+                         </div>
+                         <div>
+                            <h4 className="font-bold text-slate-900">GST Registration</h4>
+                            <span className="text-xs text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded-full">VERIFIED</span>
+                         </div>
+                      </div>
+                      <div className="space-y-2 text-sm text-slate-600 mb-4">
+                         <div className="flex justify-between border-b border-slate-50 pb-2">
+                            <span className="text-slate-400">GSTIN</span>
+                            <span className="font-mono font-bold">02ABCDE1234F1Z5</span>
+                         </div>
+                         <div className="flex justify-between">
+                            <span className="text-slate-400">Status</span>
+                            <span className="font-bold text-green-600">Active</span>
+                         </div>
+                      </div>
+                      <button className="w-full bg-slate-50 text-slate-700 py-2 rounded-lg text-xs font-bold hover:bg-slate-100 border border-slate-200">View Certificate</button>
+                   </div>
+                </div>
+             </div>
+          )}
+
           {/* IMPORT DATA TAB */}
           {activeTab === 'import' && (
              <div className="animate-fade-in grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -846,7 +920,7 @@ const ShopOwnerDemo: React.FC = () => {
           )}
 
           {/* Placeholders for other tabs */}
-          {(activeTab === 'purchases' || activeTab === 'suppliers' || activeTab === 'import') && (
+          {(activeTab === 'purchases' || activeTab === 'suppliers') && (
              <div className="flex flex-col items-center justify-center h-96 text-center animate-fade-in">
                 <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6">
                    <Settings className="h-10 w-10 text-slate-300" />
