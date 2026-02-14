@@ -311,7 +311,7 @@ const ShopOwnerDemo: React.FC = () => {
                 <div className="text-xs text-slate-500">Owner • Solan, HP</div>
              </div>
              <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center border border-slate-200 overflow-hidden">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rajesh" alt="Owner" className="w-full h-full object-cover" />
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rajesh" alt="Owner" className="w-full h-full object-cover" loading="lazy" width="40" height="40" />
              </div>
           </div>
         </header>
@@ -415,6 +415,9 @@ const ShopOwnerDemo: React.FC = () => {
                                       src={`https://api.dicebear.com/7.x/shapes/svg?seed=${m.name}`} 
                                       alt={m.name} 
                                       className="w-6 h-6 opacity-80" 
+                                      loading="lazy"
+                                      width="24"
+                                      height="24"
                                     />
                                  </div>
                                  <div>
@@ -456,6 +459,9 @@ const ShopOwnerDemo: React.FC = () => {
                                       src={`https://api.dicebear.com/7.x/shapes/svg?seed=${item.item.name}`} 
                                       alt={item.item.name} 
                                       className="w-8 h-8 opacity-80" 
+                                      loading="lazy"
+                                      width="32"
+                                      height="32"
                                     />
                                  </div>
                                  <div>
@@ -540,6 +546,9 @@ const ShopOwnerDemo: React.FC = () => {
                                           src={`https://api.dicebear.com/7.x/shapes/svg?seed=${m.name}`} 
                                           alt={m.name} 
                                           className="w-6 h-6 opacity-80" 
+                                          loading="lazy"
+                                          width="24"
+                                          height="24"
                                         />
                                      </div>
                                      <span className="font-bold text-slate-700">{m.name}</span>
@@ -687,7 +696,7 @@ const ShopOwnerDemo: React.FC = () => {
                       <div key={sup.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                          <div className="flex items-center gap-4 mb-4">
                             <div className="w-12 h-12 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                               <img src={`https://api.dicebear.com/7.x/initials/svg?seed=${sup.name}`} alt={sup.name} />
+                               <img src={`https://api.dicebear.com/7.x/initials/svg?seed=${sup.name}`} alt={sup.name} loading="lazy" width="48" height="48" />
                             </div>
                             <div>
                                 <h3 className="font-bold text-slate-900">{sup.name}</h3>

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { HashRouter as Router, Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -7,20 +8,20 @@ import SplashScreen from './components/SplashScreen';
 import Seo from './components/Seo';
 import { AppProvider } from './context/AppContext';
 
-// Pages
-import Home from './pages/Home';
-import Owners from './pages/Owners';
-import WishlistPage from './pages/WishlistPage';
-import ShopOwnerDemoPage from './pages/ShopOwnerDemoPage'; // Import new page
-import FeedbackPage from './pages/FeedbackPage';
-import PartnerForm from './pages/PartnerForm';
-import Documentation from './pages/Documentation';
-import RoadmapPage from './pages/RoadmapPage';
-import LegalPage from './pages/LegalPage';
-import AboutUs from './pages/AboutUs';
-import Careers from './pages/Careers';
-import AdminLogin from './pages/AdminLogin';
-import AdminDashboard from './pages/AdminDashboard';
+// Lazy Load Pages to split code chunks
+const Home = lazy(() => import('./pages/Home'));
+const Owners = lazy(() => import('./pages/Owners'));
+const WishlistPage = lazy(() => import('./pages/WishlistPage'));
+const ShopOwnerDemoPage = lazy(() => import('./pages/ShopOwnerDemoPage'));
+const FeedbackPage = lazy(() => import('./pages/FeedbackPage'));
+const PartnerForm = lazy(() => import('./pages/PartnerForm'));
+const Documentation = lazy(() => import('./pages/Documentation'));
+const RoadmapPage = lazy(() => import('./pages/RoadmapPage'));
+const LegalPage = lazy(() => import('./pages/LegalPage'));
+const AboutUs = lazy(() => import('./pages/AboutUs'));
+const Careers = lazy(() => import('./pages/Careers'));
+const AdminLogin = lazy(() => import('./pages/AdminLogin'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -49,7 +50,9 @@ const AppContent = () => {
       setIsLoading(false);
       // FORCE REDIRECT: Ensure we always start at Home on reload/open
       // This overrides any previous URL hash like #/admin
-      navigate('/'); 
+      if (location.pathname === '/' || location.pathname === '') {
+         // Keep home
+      }
     }, 2200); 
 
     return () => clearTimeout(timer);
@@ -67,83 +70,85 @@ const AppContent = () => {
       <ScrollToTop />
       {!isFullScreenRoute && <Navbar />}
       <main className="flex-grow">
-        <Routes>
-          <Route path="/" element={
-             <PageWrapper title="Pharmelo | #1 Instant Pharmacy in Solan" desc="Order medicine online in Solan. Skip the line at local pharmacies.">
-                <Home />
-             </PageWrapper>
-          } />
-          <Route path="/owners" element={
-             <PageWrapper title="Pharmelo for Pharmacy Owners | Grow Your Business" desc="Join the Pharmelo network. Get more customers, manage inventory, and reduce counter wait times.">
-                <Owners />
-             </PageWrapper>
-          } />
-          <Route path="/wishlist" element={
-             <PageWrapper title="Try Pharmelo Demo | Live App Simulation" desc="Experience the Pharmelo app right now in your browser. No download required.">
-                <WishlistPage />
-             </PageWrapper>
-          } />
-          <Route path="/shop-demo" element={
-             <PageWrapper title="Pharmelo Partner Dashboard Demo" desc="Interactive demo for pharmacy owners. See how to manage orders and inventory.">
-                <ShopOwnerDemoPage />
-             </PageWrapper>
-          } /> 
-          <Route path="/roadmap" element={
-             <PageWrapper title="Pharmelo Roadmap | Solan Launch Timeline" desc="See our journey from Solan to Himachal. Upcoming features and city launches.">
-                <RoadmapPage />
-             </PageWrapper>
-          } />
-          <Route path="/feedback" element={
-             <PageWrapper title="Community Feedback | Pharmelo" desc="Help us build the best pharmacy app. Share your suggestions and vote on features.">
-                <FeedbackPage />
-             </PageWrapper>
-          } />
-          <Route path="/partner-form" element={
-             <PageWrapper title="Apply to be a Partner | Pharmelo" desc="Pharmacy registration form. Join Solan's fastest growing medical network.">
-                <PartnerForm />
-             </PageWrapper>
-          } />
-          <Route path="/documentation" element={
-             <PageWrapper title="Partner Documentation | Pharmelo" desc="Technical guides and onboarding manuals for pharmacy partners.">
-                <Documentation />
-             </PageWrapper>
-          } />
-          <Route path="/terms" element={
-             <PageWrapper title="Terms of Service | Pharmelo" desc="Legal terms and conditions for using the Pharmelo platform.">
-                <LegalPage type="terms" />
-             </PageWrapper>
-          } />
-          <Route path="/privacy" element={
-             <PageWrapper title="Privacy Policy | Pharmelo" desc="How we protect your health data and personal information.">
-                <LegalPage type="privacy" />
-             </PageWrapper>
-          } />
-          <Route path="/about" element={
-             <PageWrapper title="About Us | The Pharmelo Story" desc="Founded by students at Shoolini University to solve the pharmacy queue problem.">
-                <AboutUs />
-             </PageWrapper>
-          } />
-          <Route path="/careers" element={
-             <PageWrapper title="Careers at Pharmelo | Join the Team" desc="We are hiring interns and developers in Solan. Help us digitize healthcare.">
-                <Careers />
-             </PageWrapper>
-          } />
-          
-          {/* Admin Routes */}
-          <Route path="/admin" element={
-             <PageWrapper title="Admin Login | Pharmelo" desc="Restricted access for Pharmelo administrators.">
-                <AdminLogin />
-             </PageWrapper>
-          } />
-          <Route path="/admin/dashboard" element={
-             <PageWrapper title="Admin Dashboard | Pharmelo" desc="Restricted access.">
-                <AdminDashboard />
-             </PageWrapper>
-          } />
-          
-          {/* Catch-all Redirect to Home to prevent 404s or unintended admin access */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div></div>}>
+          <Routes>
+            <Route path="/" element={
+               <PageWrapper title="Pharmelo | #1 Instant Pharmacy in Solan" desc="Order medicine online in Solan. Skip the line at local pharmacies.">
+                  <Home />
+               </PageWrapper>
+            } />
+            <Route path="/owners" element={
+               <PageWrapper title="Pharmelo for Pharmacy Owners | Grow Your Business" desc="Join the Pharmelo network. Get more customers, manage inventory, and reduce counter wait times.">
+                  <Owners />
+               </PageWrapper>
+            } />
+            <Route path="/wishlist" element={
+               <PageWrapper title="Try Pharmelo Demo | Live App Simulation" desc="Experience the Pharmelo app right now in your browser. No download required.">
+                  <WishlistPage />
+               </PageWrapper>
+            } />
+            <Route path="/shop-demo" element={
+               <PageWrapper title="Pharmelo Partner Dashboard Demo" desc="Interactive demo for pharmacy owners. See how to manage orders and inventory.">
+                  <ShopOwnerDemoPage />
+               </PageWrapper>
+            } /> 
+            <Route path="/roadmap" element={
+               <PageWrapper title="Pharmelo Roadmap | Solan Launch Timeline" desc="See our journey from Solan to Himachal. Upcoming features and city launches.">
+                  <RoadmapPage />
+               </PageWrapper>
+            } />
+            <Route path="/feedback" element={
+               <PageWrapper title="Community Feedback | Pharmelo" desc="Help us build the best pharmacy app. Share your suggestions and vote on features.">
+                  <FeedbackPage />
+               </PageWrapper>
+            } />
+            <Route path="/partner-form" element={
+               <PageWrapper title="Apply to be a Partner | Pharmelo" desc="Pharmacy registration form. Join Solan's fastest growing medical network.">
+                  <PartnerForm />
+               </PageWrapper>
+            } />
+            <Route path="/documentation" element={
+               <PageWrapper title="Partner Documentation | Pharmelo" desc="Technical guides and onboarding manuals for pharmacy partners.">
+                  <Documentation />
+               </PageWrapper>
+            } />
+            <Route path="/terms" element={
+               <PageWrapper title="Terms of Service | Pharmelo" desc="Legal terms and conditions for using the Pharmelo platform.">
+                  <LegalPage type="terms" />
+               </PageWrapper>
+            } />
+            <Route path="/privacy" element={
+               <PageWrapper title="Privacy Policy | Pharmelo" desc="How we protect your health data and personal information.">
+                  <LegalPage type="privacy" />
+               </PageWrapper>
+            } />
+            <Route path="/about" element={
+               <PageWrapper title="About Us | The Pharmelo Story" desc="Founded by students at Shoolini University to solve the pharmacy queue problem.">
+                  <AboutUs />
+               </PageWrapper>
+            } />
+            <Route path="/careers" element={
+               <PageWrapper title="Careers at Pharmelo | Join the Team" desc="We are hiring interns and developers in Solan. Help us digitize healthcare.">
+                  <Careers />
+               </PageWrapper>
+            } />
+            
+            {/* Admin Routes */}
+            <Route path="/admin" element={
+               <PageWrapper title="Admin Login | Pharmelo" desc="Restricted access for Pharmelo administrators.">
+                  <AdminLogin />
+               </PageWrapper>
+            } />
+            <Route path="/admin/dashboard" element={
+               <PageWrapper title="Admin Dashboard | Pharmelo" desc="Restricted access.">
+                  <AdminDashboard />
+               </PageWrapper>
+            } />
+            
+            {/* Catch-all Redirect to Home to prevent 404s or unintended admin access */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
       </main>
       {!isFullScreenRoute && <Footer />}
       {!isFullScreenRoute && <StickyCTA />}

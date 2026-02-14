@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   ShoppingBag, Search, Home, User, Calendar, 
@@ -350,7 +351,7 @@ const PharmeloApp = () => {
                      {PRODUCTS.slice(0, 3).map(product => (
                          <div key={product.id} className="flex items-center gap-4 bg-white p-3 rounded-2xl border border-slate-50 shadow-sm">
                              <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-300">
-                                <img src={`https://api.dicebear.com/7.x/shapes/svg?seed=${product.name}`} alt="" className="w-6 h-6 opacity-50" />
+                                <img src={`https://api.dicebear.com/7.x/shapes/svg?seed=${product.name}`} alt="" className="w-6 h-6 opacity-50" loading="lazy" width="24" height="24" />
                              </div>
                              <div className="flex-1">
                                  <div className="text-sm font-bold text-slate-900">{product.name}</div>
@@ -409,7 +410,7 @@ const PharmeloApp = () => {
                         <div key={product.id} className="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400">
-                                <img src={`https://api.dicebear.com/7.x/shapes/svg?seed=${product.name}`} alt="" className="w-8 h-8 opacity-50" />
+                                <img src={`https://api.dicebear.com/7.x/shapes/svg?seed=${product.name}`} alt="" className="w-8 h-8 opacity-50" loading="lazy" width="32" height="32" />
                             </div>
                             <div>
                                 <div className="font-bold text-slate-900 text-sm">{product.name}</div>
@@ -597,6 +598,9 @@ const PharmeloApp = () => {
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(showQr)}&bgcolor=0f172a&color=ffffff&margin=0`} 
                         alt="QR Code" 
                         className="w-40 h-40 rounded-lg mix-blend-screen" 
+                        loading="lazy"
+                        width="150"
+                        height="150"
                       />
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                          <div className="bg-white p-1 rounded-full">
@@ -846,6 +850,9 @@ const WishlistFeature: React.FC = () => {
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(currentUrl)}&bgcolor=ffffff`} 
                         className="w-20 h-20 rounded-lg mix-blend-multiply" 
                         alt="Scan to try on mobile"
+                        loading="lazy"
+                        width="80"
+                        height="80"
                     />
                     <div className="absolute -bottom-1 -right-1 bg-slate-900 text-white p-1 rounded-full border-2 border-white">
                         <Smartphone size={12} />
