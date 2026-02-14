@@ -2,8 +2,7 @@ import { UserRole } from "../types";
 import { GoogleGenAI } from "@google/genai";
 
 // Initialize Gemini Client
-// IMPORTANT: In a real production app, you should proxy these calls through your own backend 
-// to keep the API key secret. For this demo/landing page, we use it client-side as requested.
+// IMPORTANT: The API key is hardcoded here for the demo/landing page to work immediately without environment variables.
 const ai = new GoogleGenAI({ apiKey: "AIzaSyDLdlJvz_iXljXHaoAKj1Qg_0eHQr5k19g" });
 
 export const analyzeFeedback = async (
