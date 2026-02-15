@@ -200,7 +200,7 @@ const Hero: React.FC = () => {
         <div className="flex flex-col sm:flex-row gap-5 justify-center items-center mb-20">
           <button 
             onClick={() => setShowWaitlist(true)}
-            className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-full font-bold text-lg transition-all duration-300 transform hover:-translate-y-1 shadow-[0_10px_40px_-10px_rgba(37,99,235,0.4)] hover:shadow-[0_20px_40px_-10px_rgba(37,99,235,0.6)] flex items-center gap-2 overflow-hidden"
+            className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-full font-bold text-lg transition-all duration-300 transform hover:-translate-y-1.5 hover:shadow-[0_25px_60px_-12px_rgba(37,99,235,0.7)] flex items-center gap-2 overflow-hidden ring-4 ring-transparent hover:ring-blue-500/20"
           >
             <span className="relative z-10 flex items-center gap-2">Join Waitlist <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" /></span>
             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
