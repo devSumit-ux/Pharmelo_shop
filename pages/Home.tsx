@@ -4,8 +4,10 @@ import Mission from '../components/Mission';
 import HowItWorks from '../components/HowItWorks';
 import FeaturesGrid from '../components/FeaturesGrid';
 import WaitlistModal from '../components/WaitlistModal';
-import { Link } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { ArrowRight, CalendarHeart, Users } from 'lucide-react';
+
+const { Link } = ReactRouterDOM as any;
 
 const Home: React.FC = () => {
   const [modalState, setModalState] = useState<{isOpen: boolean, type: 'waitlist' | 'community'}>({

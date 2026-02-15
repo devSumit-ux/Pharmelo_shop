@@ -1,12 +1,13 @@
-
 import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { HashRouter as Router, Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import StickyCTA from './components/StickyCTA';
 import SplashScreen from './components/SplashScreen';
 import Seo from './components/Seo';
 import { AppProvider } from './context/AppContext';
+
+const { HashRouter: Router, Routes, Route, useLocation, Navigate, useNavigate } = ReactRouterDOM as any;
 
 // HELPER: Retry Lazy Imports
 const lazyWithRetry = (componentImport: () => Promise<any>) => {

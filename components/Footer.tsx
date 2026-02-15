@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Pill, Twitter, Instagram, Linkedin, Mail, X, Rocket } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { useAppConfig } from '../context/AppContext';
+
+const { Link } = ReactRouterDOM as any;
 
 const Footer: React.FC = () => {
   const [showComingSoon, setShowComingSoon] = useState(false);

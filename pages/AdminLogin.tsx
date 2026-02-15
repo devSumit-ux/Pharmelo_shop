@@ -1,9 +1,10 @@
-
 import React, { useState } from 'react';
 import { supabase } from '../services/supabaseClient';
-import { useNavigate, Link } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { Lock, Loader2, AlertCircle, ShieldCheck, UserPlus, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { useAppConfig } from '../context/AppContext';
+
+const { useNavigate, Link } = ReactRouterDOM as any;
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState('');

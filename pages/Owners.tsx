@@ -1,7 +1,8 @@
-
 import React from 'react';
 import { TrendingUp, Shield, Users, Store, CheckCircle2, Laptop, BookOpen, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
+
+const { Link } = ReactRouterDOM as any;
 
 const Owners: React.FC = () => {
   return (
