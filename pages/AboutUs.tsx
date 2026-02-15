@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { Pill, GraduationCap, Target, Heart, ArrowRight } from 'lucide-react';
+import { Pill, GraduationCap, Target, Heart, ArrowRight, History } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const AboutUs: React.FC = () => {
@@ -16,7 +17,7 @@ const AboutUs: React.FC = () => {
             Built for <span className="text-blue-600">The Community</span>.
           </h1>
           <p className="text-xl text-slate-500 leading-relaxed">
-            Pharmelo isn't just a tech startup; it's a student initiative to fix the broken pharmacy experience in Solan and beyond.
+            Pharmelo (formerly Medzo) isn't just a tech startup; it's a student initiative to fix the broken pharmacy experience in Solan and beyond.
           </p>
         </div>
       </div>
@@ -68,6 +69,31 @@ const AboutUs: React.FC = () => {
                     </div>
                  </div>
              </div>
+         </div>
+      </div>
+
+      {/* From Medzo to Pharmelo - REBRANDING STORY */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
+         <div className="bg-slate-900 rounded-[2.5rem] p-10 md:p-14 text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600 rounded-full blur-[100px] opacity-20 pointer-events-none"></div>
+            
+            <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-white/10 rounded-lg"><History className="text-blue-300" /></div>
+                <span className="text-blue-300 font-bold uppercase tracking-widest text-sm">The Evolution</span>
+            </div>
+            
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">From Medzo to Pharmelo</h2>
+            <div className="space-y-4 text-slate-300 text-lg leading-relaxed">
+               <p>
+                  The journey began as <strong>Medzo</strong>. Sumit Gupta launched Medzo as a pilot project within the Shoolini University campus. The goal was simple: help students find medicines without walking miles to the nearest chemist.
+               </p>
+               <p>
+                  Medzo quickly gained traction, but the vision grew bigger. To serve the entire city of Solan and eventually all of Himachal Pradesh, we evolved.
+               </p>
+               <p>
+                  Today, <strong>Pharmelo</strong> is the realized dream of Medzo—a robust, city-wide network connecting every major pharmacy in Solan. While the name has changed to reflect our speed ("Pharma" + "Velocity"), our core mission remains the same.
+               </p>
+            </div>
          </div>
       </div>
 
