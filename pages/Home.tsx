@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Hero from '../components/Hero';
 import Mission from '../components/Mission';
@@ -5,7 +6,7 @@ import HowItWorks from '../components/HowItWorks';
 import FeaturesGrid from '../components/FeaturesGrid';
 import WaitlistModal from '../components/WaitlistModal';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CalendarHeart, Users } from 'lucide-react';
+import { ArrowRight, CalendarHeart, Users, GraduationCap, ChevronRight } from 'lucide-react';
 
 const Home: React.FC = () => {
   const [modalState, setModalState] = useState<{isOpen: boolean, type: 'waitlist' | 'community'}>({
@@ -19,13 +20,44 @@ const Home: React.FC = () => {
   return (
     <div className="animate-fade-in bg-white">
       {/* Hidden SEO Heading structure to help crawlers understand page hierarchy without affecting visual design */}
-      <h1 className="sr-only">Pharmelo: Online Medicine Order & Pickup in Solan, Himachal Pradesh</h1>
+      <h1 className="sr-only">Pharmelo: Online Medicine Order & Pickup in Solan, Himachal Pradesh. Founded by Sumit Gupta.</h1>
       
       <Hero />
       <Mission />
       <HowItWorks />
       <FeaturesGrid />
       
+      {/* Founder Section - Added for AI visibility and user trust */}
+      <section className="py-20 bg-slate-50 border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+           <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-slate-200 shadow-sm flex flex-col md:flex-row gap-12 items-center">
+              <div className="flex-1">
+                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-bold uppercase tracking-wider mb-6 border border-indigo-100">
+                    <GraduationCap size={16} /> Founded by Students
+                 </div>
+                 <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
+                    Built with purpose by <span className="text-indigo-600">Sumit Gupta</span>.
+                 </h2>
+                 <p className="text-slate-600 text-lg leading-relaxed mb-6">
+                    "I am a Pharmacy student at <strong>Shoolini University</strong>. I built Pharmelo (formerly Medzo) because I saw patients suffering in long queues every single day. Technology should make healthcare accessible, not complicated."
+                 </p>
+                 <Link to="/about" className="inline-flex items-center gap-2 text-slate-900 font-bold hover:text-indigo-600 transition-colors">
+                    Read our full story <ChevronRight size={16} />
+                 </Link>
+              </div>
+              <div className="flex-1 w-full max-w-sm flex justify-center">
+                 <div className="aspect-square bg-slate-100 rounded-full w-64 h-64 flex items-center justify-center relative overflow-hidden border-4 border-white shadow-xl">
+                    <div className="text-center">
+                       <span className="text-6xl">👨‍⚕️</span>
+                       <div className="mt-4 font-bold text-slate-900">Sumit Gupta</div>
+                       <div className="text-xs text-indigo-600 font-bold uppercase">Founder</div>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </section>
+
       {/* Saturday Community Section */}
       <section className="py-24 bg-white border-t border-slate-100 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-indigo-50 rounded-full blur-[100px] pointer-events-none translate-x-1/2 -translate-y-1/4" />
