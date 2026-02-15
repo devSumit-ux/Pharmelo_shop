@@ -1,8 +1,15 @@
+
 {
   "rewrites": [
     {
-      "source": "/((?!sitemap.xml|robots.txt|logo.png|assets/|.*\\.(?:js|css|map|ico|png|jpg|jpeg|svg|webmanifest)).*)",
+      "source": "/((?!api/|sitemap.xml|robots.txt|logo.png|assets/|.*\\.(?:js|css|map|ico|png|jpg|jpeg|svg|webmanifest)).*)",
       "destination": "/index.html"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/trigger-automation",
+      "schedule": "0 9 * * 1"
     }
   ]
 }
