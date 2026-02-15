@@ -15,40 +15,37 @@ export default async function handler(request: Request) {
     const apiKey = process.env.API_KEY;
 
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: 'Server misconfigured: Missing API Key' }), { status: 500 });
+      // Return Mock Data if API Key is missing (prevents crash)
+      return new Response(JSON.stringify({
+        analysis: "AI Key missing. This is a simulated analysis based on your input.",
+        sentiment: feedback.toLowerCase().includes('bad') ? 'constructive' : 'positive',
+        strategicAction: "Manual review recommended. Add API_KEY to Vercel env vars to enable real AI."
+      }), {
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
 
     const ai = new GoogleGenAI({ apiKey });
     
     const prompt = `Analyze the following feedback from a ${role} for a pharmacy pickup app called Pharmelo.
       Feedback: "${feedback}"
-      
-      Return a JSON object with these keys:
-      - analysis: A empathetic summary of their point.
-      - sentiment: 'positive', 'neutral', or 'constructive'.
-      - strategicAction: A specific feature or business action Pharmelo should take to address this.
-      
-      Do not format as markdown. Just raw JSON.`;
+      Return a JSON object with: analysis, sentiment ('positive', 'neutral', 'constructive'), and strategicAction.`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash', // Using a fast, reliable model for backend
+      model: 'gemini-2.0-flash', 
       contents: prompt,
-      config: {
-        responseMimeType: 'application/json'
-      }
+      config: { responseMimeType: 'application/json' }
     });
 
-    const text = response.text();
-    return new Response(text, {
+    return new Response(response.text(), {
       headers: { 'Content-Type': 'application/json' }
     });
 
   } catch (error: any) {
-    console.error("AI Error:", error);
     return new Response(JSON.stringify({ 
       analysis: "AI Service Temporarily Unavailable", 
       sentiment: "neutral", 
       strategicAction: "Manual review required." 
-    }), { status: 200 }); // Fail gracefully
+    }), { status: 200 });
   }
 }
