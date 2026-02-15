@@ -55,9 +55,9 @@ const ScrollToTop = () => {
 };
 
 // Wrapper for pages to inject SEO
-const PageWrapper = ({ children, title, desc }: React.PropsWithChildren<{ title: string, desc: string }>) => (
+const PageWrapper = ({ children, title, desc, keywords }: React.PropsWithChildren<{ title: string, desc: string, keywords?: string }>) => (
     <>
-        <Seo title={title} description={desc} />
+        <Seo title={title} description={desc} keywords={keywords} />
         {children}
     </>
 );
@@ -98,7 +98,7 @@ const AppContent = () => {
             <Route path="/owners" element={<PageWrapper title="Pharmelo for Pharmacy Owners | Grow Your Business" desc="Join the Pharmelo network. Get more customers, manage inventory, and reduce counter wait times."><Owners /></PageWrapper>} />
             <Route path="/wishlist" element={<PageWrapper title="Try Pharmelo Demo | Live App Simulation" desc="Experience the Pharmelo app right now in your browser. No download required."><WishlistPage /></PageWrapper>} />
             <Route path="/shop-demo" element={<PageWrapper title="Pharmelo Partner Dashboard Demo" desc="Interactive demo for pharmacy owners. See how to manage orders and inventory."><ShopOwnerDemoPage /></PageWrapper>} />
-            <Route path="/roadmap" element={<PageWrapper title="Pharmelo Roadmap | Solan Launch Timeline" desc="See our journey from Solan to Himachal. Upcoming features and city launches."><RoadmapPage /></PageWrapper>} />
+            <Route path="/roadmap" element={<PageWrapper title="Pharmelo Roadmap | Solan Pharmacy Launch Timeline" desc="Track our journey transforming healthcare in Himachal. See our launch phases for Solan, Shimla, and beyond." keywords="Pharmelo roadmap, Solan pharmacy launch timeline, Himachal healthcare innovation"><RoadmapPage /></PageWrapper>} />
             <Route path="/feedback" element={<PageWrapper title="Community Feedback | Pharmelo" desc="Help us build the best pharmacy app. Share your suggestions and vote on features."><FeedbackPage /></PageWrapper>} />
             <Route path="/partner-form" element={<PageWrapper title="Apply to be a Partner | Pharmelo" desc="Pharmacy registration form. Join Solan's fastest growing medical network."><PartnerForm /></PageWrapper>} />
             <Route path="/documentation" element={<PageWrapper title="Partner Documentation | Pharmelo" desc="Technical guides and onboarding manuals for pharmacy partners."><Documentation /></PageWrapper>} />
