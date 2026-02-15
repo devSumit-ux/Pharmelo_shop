@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Pill, Menu, X, ChevronRight } from 'lucide-react';
-import * as ReactRouterDOM from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useAppConfig } from '../context/AppContext';
 import WaitlistModal from './WaitlistModal';
-
-const { NavLink, useLocation } = ReactRouterDOM as any;
 
 const navItems = [
   { label: 'Home', href: '/' },
@@ -72,7 +70,7 @@ const Navbar: React.FC = () => {
                 <NavLink
                   key={item.label}
                   to={item.href}
-                  className={({ isActive }: { isActive: boolean }) =>
+                  className={({ isActive }) =>
                     `text-sm font-semibold transition-colors hover:text-blue-600 ${
                       isActive ? 'text-blue-600' : 'text-slate-600'
                     }`
@@ -117,7 +115,7 @@ const Navbar: React.FC = () => {
                 key={item.label}
                 to={item.href}
                 style={{ transitionDelay: `${index * 50}ms` }}
-                className={({ isActive }: { isActive: boolean }) =>
+                className={({ isActive }) =>
                   `block text-lg font-medium px-6 py-4 rounded-2xl transition-all duration-300 transform ${
                     isOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
                   } ${

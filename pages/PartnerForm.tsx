@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { Building2, User, Phone, Mail, FileText, MapPin, Loader2, CheckCircle2, ArrowRight, ShieldCheck, Stethoscope, AlertCircle } from 'lucide-react';
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
-
-const { Link } = ReactRouterDOM as any;
 
 const SERVICES = [
   "Prescription Refills",

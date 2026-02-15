@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
-import * as ReactRouterDOM from 'react-router-dom';
-
-const { useLocation } = ReactRouterDOM as any;
+import { useLocation } from 'react-router-dom';
 
 interface SeoProps {
   title: string;

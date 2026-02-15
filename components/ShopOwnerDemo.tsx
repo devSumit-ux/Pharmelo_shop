@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   LayoutDashboard, ShoppingCart, Package, Smartphone, 
@@ -6,9 +7,7 @@ import {
   Clock, AlertTriangle, DollarSign, User, Sparkles,
   FileText, Download, CheckCircle, UploadCloud, ChevronDown, MoreHorizontal, Shield
 } from 'lucide-react';
-import * as ReactRouterDOM from 'react-router-dom';
-
-const { useNavigate } = ReactRouterDOM as any;
+import { useNavigate } from 'react-router-dom';
 
 // --- MOCK DATA ---
 

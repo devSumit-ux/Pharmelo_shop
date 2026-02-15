@@ -1,10 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { ArrowRight, Calendar, CheckCircle2 } from 'lucide-react';
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 import WaitlistModal from './WaitlistModal';
-
-const { Link } = ReactRouterDOM as any;
 
 // Utility component for animated counting
 const Counter = ({ from = 0, to, duration = 2500 }: { from?: number; to: number; duration?: number }) => {

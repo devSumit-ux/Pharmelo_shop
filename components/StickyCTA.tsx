@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import WaitlistModal from './WaitlistModal';
-
-const { Link, useLocation } = ReactRouterDOM as any;
 
 const StickyCTA: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);

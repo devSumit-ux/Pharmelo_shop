@@ -1,8 +1,6 @@
 import React from 'react';
 import { Pill, GraduationCap, Target, Heart, ArrowRight } from 'lucide-react';
-import * as ReactRouterDOM from 'react-router-dom';
-
-const { Link } = ReactRouterDOM as any;
+import { Link } from 'react-router-dom';
 
 const AboutUs: React.FC = () => {
   return (

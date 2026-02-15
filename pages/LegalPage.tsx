@@ -1,8 +1,6 @@
 import React from 'react';
 import { Shield, Lock, FileText, ArrowLeft } from 'lucide-react';
-import * as ReactRouterDOM from 'react-router-dom';
-
-const { Link } = ReactRouterDOM as any;
+import { Link } from 'react-router-dom';
 
 interface LegalPageProps {
   type: 'terms' | 'privacy';
