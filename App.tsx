@@ -95,7 +95,7 @@ const AppContent = () => {
         }>
           <Routes>
             <Route path="/" element={<PageWrapper title="Pharmelo | #1 Instant Pharmacy in Solan" desc="Order medicine online in Solan. Skip the line at local pharmacies."><Home /></PageWrapper>} />
-            <Route path="/owners" element={<PageWrapper title="Pharmelo for Pharmacy Owners | Grow Your Business" desc="Join the Pharmelo network. Get more customers, manage inventory, and reduce counter wait times."><Owners /></PageWrapper>} />
+            <Route path="/owners" element={<PageWrapper title="Pharmelo for Pharmacy Owners | Grow Your Business" desc="Partner with Pharmelo to increase sales and streamline operations. The best pharmacy management software and online medicine sales platform for shops in Solan and Himachal." keywords="pharmacy partnership Solan, online medicine sales Himachal, pharmacy management software, medical store business growth"><Owners /></PageWrapper>} />
             <Route path="/wishlist" element={<PageWrapper title="Try Pharmelo Demo | Live App Simulation" desc="Experience the Pharmelo app right now in your browser. No download required."><WishlistPage /></PageWrapper>} />
             <Route path="/shop-demo" element={<PageWrapper title="Pharmelo Partner Dashboard Demo" desc="Interactive demo for pharmacy owners. See how to manage orders and inventory."><ShopOwnerDemoPage /></PageWrapper>} />
             <Route path="/roadmap" element={<PageWrapper title="Pharmelo Roadmap | Solan Pharmacy Launch Timeline" desc="Track our journey transforming healthcare in Himachal. See our launch phases for Solan, Shimla, and beyond." keywords="Pharmelo roadmap, Solan pharmacy launch timeline, Himachal healthcare innovation"><RoadmapPage /></PageWrapper>} />
