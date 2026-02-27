@@ -394,44 +394,46 @@ const ShopOwnerDemo: React.FC = () => {
                      <input type="text" placeholder="Doctor Name" className="w-1/3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:border-emerald-500" />
                   </div>
 
-                  <div className="flex-1 bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col">
-                     <div className="grid grid-cols-12 bg-slate-50 p-3 text-xs font-bold text-slate-500 uppercase border-b border-slate-200">
-                        <div className="col-span-5">Medicine</div>
-                        <div className="col-span-2">Batch</div>
-                        <div className="col-span-2">Expiry</div>
-                        <div className="col-span-1">Stock</div>
-                        <div className="col-span-2 text-right">MRP</div>
-                     </div>
-                     <div className="overflow-y-auto flex-1">
-                        {MEDICINES.filter(m => m.name.toLowerCase().includes(searchQuery.toLowerCase())).map(m => (
-                           <div 
-                              key={m.id} 
-                              onClick={() => addToCart(m)}
-                              className="grid grid-cols-12 p-4 border-b border-slate-50 hover:bg-emerald-50 cursor-pointer transition-colors items-center"
-                           >
-                              <div className="col-span-5 font-medium text-slate-900 flex items-center gap-3">
-                                 {/* Medicine Image */}
-                                 <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center overflow-hidden border border-slate-100">
-                                    <img 
-                                      src={`https://api.dicebear.com/7.x/shapes/svg?seed=${m.name}`} 
-                                      alt={m.name} 
-                                      className="w-6 h-6 opacity-80" 
-                                      loading="lazy"
-                                      width="24"
-                                      height="24"
-                                    />
+                  <div className="flex-1 bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col min-h-[400px]">
+                     <div className="min-w-[600px] flex-1 flex flex-col overflow-hidden">
+                        <div className="grid grid-cols-12 bg-slate-50 p-3 text-xs font-bold text-slate-500 uppercase border-b border-slate-200">
+                           <div className="col-span-5">Medicine</div>
+                           <div className="col-span-2">Batch</div>
+                           <div className="col-span-2">Expiry</div>
+                           <div className="col-span-1">Stock</div>
+                           <div className="col-span-2 text-right">MRP</div>
+                        </div>
+                        <div className="overflow-y-auto flex-1">
+                           {MEDICINES.filter(m => m.name.toLowerCase().includes(searchQuery.toLowerCase())).map(m => (
+                              <div 
+                                 key={m.id} 
+                                 onClick={() => addToCart(m)}
+                                 className="grid grid-cols-12 p-4 border-b border-slate-50 hover:bg-emerald-50 cursor-pointer transition-colors items-center"
+                              >
+                                 <div className="col-span-5 font-medium text-slate-900 flex items-center gap-3">
+                                    {/* Medicine Image */}
+                                    <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center overflow-hidden border border-slate-100">
+                                       <img 
+                                         src={`https://api.dicebear.com/7.x/shapes/svg?seed=${m.name}`} 
+                                         alt={m.name} 
+                                         className="w-6 h-6 opacity-80" 
+                                         loading="lazy"
+                                         width="24"
+                                         height="24"
+                                       />
+                                    </div>
+                                    <div>
+                                       <div className="text-sm">{m.name}</div>
+                                       <div className="text-[10px] text-slate-400">{m.category}</div>
+                                    </div>
                                  </div>
-                                 <div>
-                                    <div>{m.name}</div>
-                                    <div className="text-[10px] text-slate-400">{m.category}</div>
-                                 </div>
+                                 <div className="col-span-2 text-xs text-slate-500">{m.batch}</div>
+                                 <div className="col-span-2 text-xs text-slate-500">{m.exp}</div>
+                                 <div className={`col-span-1 text-xs font-bold ${m.stock < 50 ? 'text-red-500' : 'text-emerald-600'}`}>{m.stock}</div>
+                                 <div className="col-span-2 text-right font-bold text-slate-900">₹{m.mrp}</div>
                               </div>
-                              <div className="col-span-2 text-xs text-slate-500">{m.batch}</div>
-                              <div className="col-span-2 text-xs text-slate-500">{m.exp}</div>
-                              <div className={`col-span-1 text-xs font-bold ${m.stock < 50 ? 'text-red-500' : 'text-emerald-600'}`}>{m.stock}</div>
-                              <div className="col-span-2 text-right font-bold text-slate-900">₹{m.mrp}</div>
-                           </div>
-                        ))}
+                           ))}
+                        </div>
                      </div>
                   </div>
                </div>

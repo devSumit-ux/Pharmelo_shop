@@ -32,7 +32,7 @@ const StickyCTA: React.FC = () => {
 
   return (
     <>
-      <div className={`fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-xl border-t border-slate-200 py-4 px-4 md:px-8 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] transition-all duration-500 ease-out transform ${animationClass}`}>
+      <div className={`fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-xl border-t border-slate-200 py-4 pb-6 sm:pb-4 px-4 md:px-8 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] transition-all duration-500 ease-out transform ${animationClass}`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           
           {/* Text Section - Hidden on very small screens */}

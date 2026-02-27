@@ -9,8 +9,8 @@ let ai: GoogleGenAI | null = null;
 const getAI = () => {
   if (ai) return ai;
   
-  // Use the provided key if process.env.API_KEY is missing or empty
-  const apiKey = process.env.API_KEY || 'AIzaSyDLdlJvz_iXljXHaoAKj1Qg_0eHQr5k19g';
+  // Use the provided key if process.env.GEMINI_API_KEY is missing or empty
+  const apiKey = process.env.GEMINI_API_KEY;
   
   if (!apiKey || apiKey.trim() === '') {
     console.warn("Gemini API Key is missing. AI features will be disabled.");
@@ -99,7 +99,9 @@ export const analyzeBatchFeedback = async (feedbacks: string[]) => {
       }
     });
 
-    return JSON.parse(response.text);
+    const text = response.text;
+    if (!text) return null;
+    return JSON.parse(text);
   } catch (e) {
     console.error("Batch Analysis Error", e);
     return null;
@@ -144,7 +146,9 @@ export const generateNewsletter = async (stats: { waitlist: number, partners: nu
       }
     });
 
-    return JSON.parse(response.text);
+    const text = response.text;
+    if (!text) throw new Error("No response text from Gemini");
+    return JSON.parse(text);
   } catch (e) {
     console.error("Newsletter Generation Error", e);
     return {

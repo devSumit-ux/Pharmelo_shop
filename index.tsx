@@ -1,36 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode, Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
-
-// Helper: Lazy Load with Retry
-// This catches "Failed to fetch dynamically imported module" errors and reloads the page once.
-const lazyWithRetry = (componentImport: () => Promise<any>) => {
-  return React.lazy(async () => {
-    const pageHasAlreadyBeenForceRefreshed = JSON.parse(
-      window.sessionStorage.getItem('page-has-been-force-refreshed') || 'false'
-    );
-
-    try {
-      const component = await componentImport();
-      window.sessionStorage.setItem('page-has-been-force-refreshed', 'false');
-      return component;
-    } catch (error: any) {
-      console.error("Lazy load failed for App:", error);
-      if (!pageHasAlreadyBeenForceRefreshed) {
-        // Assuming that the user is not on the latest version of the application.
-        // Let's refresh the page immediately.
-        window.sessionStorage.setItem('page-has-been-force-refreshed', 'true');
-        window.location.reload();
-        // Return a never-resolving promise to pause React rendering until reload completes
-        return new Promise(() => {}); 
-      }
-      // If we already reloaded and it still fails, throw the error to be caught by ErrorBoundary
-      throw error;
-    }
-  });
-};
-
-// DYNAMIC IMPORT with Retry
-const App = lazyWithRetry(() => import('./App'));
+import './index.css';
+import App from './App';
 
 interface ErrorBoundaryProps {
   children?: ReactNode;
@@ -41,12 +12,10 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-// Simple Error Boundary to catch React Rendering errors
-class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  public state: ErrorBoundaryState = { hasError: false, error: null };
-
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
+    this.state = { hasError: false, error: null };
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
@@ -85,7 +54,6 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 const rootElement = document.getElementById('root');
 
 if (!rootElement) {
-  console.error("Root element not found");
   throw new Error("Could not find root element to mount to");
 }
 
@@ -104,9 +72,7 @@ try {
       </ErrorBoundary>
     </React.StrictMode>
   );
-  console.log("App mounted successfully");
 } catch (error: any) {
   console.error("Failed to mount React app:", error);
-  // Manual trigger of visual error handler in index.html
   if (window.onerror) window.onerror(error.message, 'index.tsx', 0, 0, error);
 }

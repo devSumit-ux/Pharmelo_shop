@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Pill, GraduationCap, Target, Heart, ArrowRight, History } from 'lucide-react';
+import { Pill, GraduationCap, Target, Heart, ArrowRight, History, AlertCircle, Zap, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const AboutUs: React.FC = () => {
@@ -10,90 +10,139 @@ const AboutUs: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
         <div className="text-center max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 mb-6">
-             <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">Our Story</span>
+             <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">The Vision</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
-            Born in a Dorm Room. <br />
-            Built for <span className="text-blue-600">The Community</span>.
+            Reimagining <span className="text-blue-600">Healthcare</span> <br />
+            One Prescription at a Time.
           </h1>
           <p className="text-xl text-slate-500 leading-relaxed">
-            Pharmelo (formerly Medzo) isn't just a tech startup; it's a student initiative to fix the broken pharmacy experience in Solan and beyond.
+            Pharmelo is more than an app—it's a research-driven initiative to solve the real-world problems of medicine ordering and prescription handling.
           </p>
+        </div>
+      </div>
+
+      {/* Problem & Solution Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="space-y-8">
+            <div>
+              <div className="flex items-center gap-3 text-red-600 font-bold mb-4">
+                <AlertCircle size={24} />
+                <h2 className="text-2xl font-bold">The Problem</h2>
+              </div>
+              <p className="text-slate-600 text-lg leading-relaxed mb-4">
+                Current medicine ordering systems are fragmented. Patients face long queues, pharmacists struggle with illegible prescriptions, and chronic patients often forget their refills.
+              </p>
+              <ul className="space-y-3">
+                {[
+                  "Handwritten prescriptions are hard to read and prone to error.",
+                  "Calling multiple pharmacies to check stock is time-consuming.",
+                  "No reliable system for auto-refill reminders for chronic meds.",
+                  "Fragmented health records across different providers."
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-slate-500">
+                    <div className="w-1.5 h-1.5 rounded-full bg-red-400 mt-2 flex-shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-3 text-blue-600 font-bold mb-4">
+                <Zap size={24} />
+                <h2 className="text-2xl font-bold">The Pharmelo Difference</h2>
+              </div>
+              <p className="text-slate-600 text-lg leading-relaxed mb-4">
+                We bridge the gap using AI and hyper-local networking. Pharmelo isn't just a delivery app; it's a smart ecosystem.
+              </p>
+              <ul className="space-y-3">
+                {[
+                  "AI-assisted prescription reading for higher accuracy.",
+                  "Real-time inventory sync with local pharmacies.",
+                  "WhatsApp-integrated ordering for maximum simplicity.",
+                  "Smart auto-refills that reserve your meds in advance."
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-slate-500">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-2 flex-shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="bg-white p-8 md:p-12 rounded-[3rem] border border-slate-100 shadow-xl shadow-blue-900/5">
+            <h3 className="text-2xl font-bold text-slate-900 mb-6">Why We Are Different</h3>
+            <div className="space-y-6">
+              <div className="flex gap-4">
+                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0">
+                  <ShieldCheck size={24} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-slate-900">Trustworthy & Anonymous</h4>
+                  <p className="text-slate-500 text-sm">Your data is used only for research and product improvement. We prioritize patient privacy above all.</p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 shrink-0">
+                  <Heart size={24} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-slate-900">Community Focused</h4>
+                  <p className="text-slate-500 text-sm">Built by students and healthcare professionals to serve local communities, starting with Solan.</p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 shrink-0">
+                  <Target size={24} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-slate-900">Research Driven</h4>
+                  <p className="text-slate-500 text-sm">Every feature is validated through extensive surveys with patients, doctors, and pharmacists.</p>
+                </div>
+              </div>
+            </div>
+            <div className="mt-10">
+              <Link to="/survey" className="w-full flex items-center justify-center gap-2 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-blue-600 transition-all">
+                Participate in Our Research <ArrowRight size={18} />
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Founder Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-         <div className="bg-white rounded-[3rem] p-8 md:p-16 border border-slate-100 shadow-xl shadow-blue-900/5 relative overflow-hidden">
-             {/* Decorative Elements */}
-             <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-50 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-             
-             <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
-                 <div className="flex-1">
-                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 rounded-xl text-indigo-700 font-bold text-sm mb-6">
-                        <GraduationCap size={18} />
-                        <span>The Founder</span>
-                     </div>
-                     <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6">
-                        Meet <span className="text-indigo-600">Sumit Gupta</span>
-                     </h2>
-                     <p className="text-slate-600 text-lg leading-relaxed mb-6">
-                        Pharmelo was founded by Sumit Gupta, a visionary <strong>student of Pharmacy currently studying at Shoolini University</strong>. 
-                     </p>
-                     <p className="text-slate-600 text-lg leading-relaxed mb-8">
-                        Observing the daily struggles of patients waiting in long lines and the inefficiencies in local medical shops, Sumit decided to bridge the gap between healthcare education and technology. His mission is to ensure that no patient in Solan has to wait for essential medicines.
-                     </p>
-                     
-                     <div className="flex flex-col sm:flex-row gap-4">
-                        <a href="mailto:sumit@pharmelo.com" className="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition-colors">
-                            Contact Sumit
-                        </a>
-                        <Link to="/roadmap" className="px-6 py-3 border border-slate-200 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-50 transition-colors">
-                            View Our Roadmap
-                        </Link>
-                     </div>
-                 </div>
+         <div className="bg-white rounded-[2rem] p-8 md:p-12 border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-12">
+             <div className="flex-1">
+                 <h2 className="text-3xl font-bold text-slate-900 mb-4">
+                    Meet the Founder
+                 </h2>
+                 <p className="text-slate-600 text-lg leading-relaxed mb-4">
+                    Pharmelo was founded by <strong>Sumit Gupta</strong>, a Pharmacy student at <strong>Shoolini University</strong>.
+                 </p>
+                 <p className="text-slate-600 text-lg leading-relaxed mb-6">
+                    After seeing patients wait in long lines for simple medicines, Sumit started this project to help the local community. The goal is simple: use technology to make pharmacy visits faster and easier for everyone in Solan.
+                 </p>
                  
-                 <div className="flex-1 w-full max-w-sm">
-                    <div className="aspect-[4/5] bg-slate-100 rounded-3xl relative overflow-hidden shadow-inner border border-slate-200 flex items-center justify-center">
-                        <div className="text-center p-8">
-                            <div className="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4 text-indigo-600">
-                                <span className="text-3xl font-bold">S</span>
-                            </div>
-                            <h3 className="text-xl font-bold text-slate-900">Sumit Gupta</h3>
-                            <p className="text-indigo-600 font-medium text-sm mb-2">Pharmacy Student</p>
-                            <div className="inline-block bg-white px-3 py-1 rounded-full border border-slate-200 shadow-sm text-xs font-bold text-slate-500">
-                                Shoolini University
-                            </div>
-                        </div>
-                    </div>
+                 <div className="flex flex-col sm:flex-row gap-4">
+                    <a href="mailto:sumit@pharmelo.com" className="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition-colors">
+                        Contact Sumit
+                    </a>
                  </div>
              </div>
-         </div>
-      </div>
-
-      {/* From Medzo to Pharmelo - REBRANDING STORY */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-         <div className="bg-slate-900 rounded-[2.5rem] p-10 md:p-14 text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600 rounded-full blur-[100px] opacity-20 pointer-events-none"></div>
-            
-            <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-white/10 rounded-lg"><History className="text-blue-300" /></div>
-                <span className="text-blue-300 font-bold uppercase tracking-widest text-sm">The Evolution</span>
-            </div>
-            
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">From Medzo to Pharmelo</h2>
-            <div className="space-y-4 text-slate-300 text-lg leading-relaxed">
-               <p>
-                  The journey began as <strong>Medzo</strong>. Sumit Gupta launched Medzo as a pilot project within the Shoolini University campus. The goal was simple: help students find medicines without walking miles to the nearest chemist.
-               </p>
-               <p>
-                  Medzo quickly gained traction, but the vision grew bigger. To serve the entire city of Solan and eventually all of Himachal Pradesh, we evolved.
-               </p>
-               <p>
-                  Today, <strong>Pharmelo</strong> is the realized dream of Medzo—a robust, city-wide network connecting every major pharmacy in Solan. While the name has changed to reflect our speed ("Pharma" + "Velocity"), our core mission remains the same.
-               </p>
-            </div>
+             
+             <div className="flex-1 w-full max-w-xs flex justify-center">
+                <div className="w-48 h-48 bg-slate-100 rounded-full flex items-center justify-center border border-slate-200">
+                    <div className="text-center">
+                        <span className="text-4xl block mb-2">👨‍⚕️</span>
+                        <div className="font-bold text-slate-900">Sumit Gupta</div>
+                        <div className="text-xs text-slate-500">Shoolini University</div>
+                    </div>
+                </div>
+             </div>
          </div>
       </div>
 

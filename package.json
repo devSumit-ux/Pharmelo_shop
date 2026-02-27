@@ -1,20 +1,22 @@
-
 {
   "name": "pharmelo-app",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@google/genai": "*",
+    "@supabase/supabase-js": "^2.39.0",
+    "framer-motion": "^12.34.3",
+    "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.22.3",
-    "lucide-react": "^0.344.0",
-    "@supabase/supabase-js": "^2.39.0",
-    "@google/genai": "*"
+    "react-router-dom": "^6.22.3"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

@@ -8,43 +8,23 @@ import SplashScreen from './components/SplashScreen';
 import Seo from './components/Seo';
 import { AppProvider } from './context/AppContext';
 
-// HELPER: Retry Lazy Imports
-const lazyWithRetry = (componentImport: () => Promise<any>) => {
-  return lazy(async () => {
-    const pageHasAlreadyBeenForceRefreshed = JSON.parse(
-      window.sessionStorage.getItem('page-has-been-force-refreshed') || 'false'
-    );
+// Eager Load Critical Pages
+import Home from './pages/Home';
+import Owners from './pages/Owners';
 
-    try {
-      const component = await componentImport();
-      window.sessionStorage.setItem('page-has-been-force-refreshed', 'false');
-      return component;
-    } catch (error: any) {
-      console.error("Lazy load failed:", error);
-      if (!pageHasAlreadyBeenForceRefreshed) {
-        window.sessionStorage.setItem('page-has-been-force-refreshed', 'true');
-        window.location.reload();
-        return new Promise(() => {}); 
-      }
-      throw error;
-    }
-  });
-};
-
-// Lazy Load Pages
-const Home = lazyWithRetry(() => import('./pages/Home'));
-const Owners = lazyWithRetry(() => import('./pages/Owners'));
-const WishlistPage = lazyWithRetry(() => import('./pages/WishlistPage'));
-const ShopOwnerDemoPage = lazyWithRetry(() => import('./pages/ShopOwnerDemoPage'));
-const FeedbackPage = lazyWithRetry(() => import('./pages/FeedbackPage'));
-const PartnerForm = lazyWithRetry(() => import('./pages/PartnerForm'));
-const Documentation = lazyWithRetry(() => import('./pages/Documentation'));
-const RoadmapPage = lazyWithRetry(() => import('./pages/RoadmapPage'));
-const LegalPage = lazyWithRetry(() => import('./pages/LegalPage'));
-const AboutUs = lazyWithRetry(() => import('./pages/AboutUs'));
-const Careers = lazyWithRetry(() => import('./pages/Careers'));
-const AdminLogin = lazyWithRetry(() => import('./pages/AdminLogin'));
-const AdminDashboard = lazyWithRetry(() => import('./pages/AdminDashboard'));
+// Lazy Load Secondary Pages
+const WishlistPage = lazy(() => import('./pages/WishlistPage'));
+const ShopOwnerDemoPage = lazy(() => import('./pages/ShopOwnerDemoPage'));
+const FeedbackPage = lazy(() => import('./pages/FeedbackPage'));
+const PartnerForm = lazy(() => import('./pages/PartnerForm'));
+const Documentation = lazy(() => import('./pages/Documentation'));
+const RoadmapPage = lazy(() => import('./pages/RoadmapPage'));
+const LegalPage = lazy(() => import('./pages/LegalPage'));
+const AboutUs = lazy(() => import('./pages/AboutUs'));
+const Careers = lazy(() => import('./pages/Careers'));
+const AdminLogin = lazy(() => import('./pages/AdminLogin'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const SurveyPage = lazy(() => import('./pages/SurveyPage'));
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -63,21 +43,7 @@ const PageWrapper = ({ children, title, desc, keywords }: React.PropsWithChildre
 );
 
 const AppContent = () => {
-  const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
-
-  useEffect(() => {
-    // Simulate initial asset loading / health check
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2200); 
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (isLoading) {
-    return <SplashScreen />;
-  }
 
   // Hide Navbar/Footer/CTA on Admin routes AND Shop Demo route
   const isFullScreenRoute = location.pathname.startsWith('/admin') || location.pathname === '/shop-demo';
@@ -110,6 +76,7 @@ const AppContent = () => {
             {/* Admin Routes */}
             <Route path="/admin" element={<PageWrapper title="Admin Login | Pharmelo" desc="Restricted access."><AdminLogin /></PageWrapper>} />
             <Route path="/admin/dashboard" element={<PageWrapper title="Admin Dashboard | Pharmelo" desc="Restricted access."><AdminDashboard /></PageWrapper>} />
+            <Route path="/survey" element={<PageWrapper title="Participate in Survey | Pharmelo" desc="Help us validate the Pharmelo concept. Share your feedback as a patient, doctor, or pharmacist."><SurveyPage /></PageWrapper>} />
             
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

@@ -6,9 +6,9 @@ import WaitlistModal from './WaitlistModal';
 
 const navItems = [
   { label: 'Home', href: '/' },
-  { label: 'For Owners', href: '/owners' },
+  { label: 'Partners', href: '/owners' },
+  { label: 'About', href: '/about' },
   { label: 'Roadmap', href: '/roadmap' },
-  { label: 'Live Demo', href: '/wishlist' },
   { label: 'Community', href: '/feedback' },
 ];
 

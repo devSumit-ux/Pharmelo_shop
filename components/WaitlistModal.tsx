@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Mail, CheckCircle2, Loader2, CalendarHeart, AlertCircle, Check } from 'lucide-react';
+import { X, Mail, CheckCircle2, Loader2, Calendar, AlertCircle, Check } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 
 interface WaitlistModalProps {
@@ -110,7 +110,7 @@ const WaitlistModal: React.FC<WaitlistModalProps> = ({ isOpen, onClose, type }) 
         ) : (
           <div>
             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-6 ${isCommunity ? 'bg-indigo-100 text-indigo-600' : 'bg-blue-100 text-blue-600'}`}>
-              {isCommunity ? <CalendarHeart size={24} /> : <Mail size={24} />}
+              {isCommunity ? <Calendar size={24} /> : <Mail size={24} />}
             </div>
             
             <h3 className="text-2xl font-bold text-slate-900 mb-2">
