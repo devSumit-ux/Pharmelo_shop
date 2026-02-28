@@ -113,39 +113,6 @@ const AboutUs: React.FC = () => {
         </div>
       </div>
 
-      {/* Founder Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-         <div className="bg-white rounded-[2rem] p-8 md:p-12 border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-12">
-             <div className="flex-1">
-                 <h2 className="text-3xl font-bold text-slate-900 mb-4">
-                    Meet the Founder
-                 </h2>
-                 <p className="text-slate-600 text-lg leading-relaxed mb-4">
-                    Pharmelo was founded by <strong>Sumit Gupta</strong>, a Pharmacy student at <strong>Shoolini University</strong>.
-                 </p>
-                 <p className="text-slate-600 text-lg leading-relaxed mb-6">
-                    After seeing patients wait in long lines for simple medicines, Sumit started this project to help the local community. The goal is simple: use technology to make pharmacy visits faster and easier for everyone in Solan.
-                 </p>
-                 
-                 <div className="flex flex-col sm:flex-row gap-4">
-                    <a href="mailto:sumit@pharmelo.com" className="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition-colors">
-                        Contact Sumit
-                    </a>
-                 </div>
-             </div>
-             
-             <div className="flex-1 w-full max-w-xs flex justify-center">
-                <div className="w-48 h-48 bg-slate-100 rounded-full flex items-center justify-center border border-slate-200">
-                    <div className="text-center">
-                        <span className="text-4xl block mb-2">👨‍⚕️</span>
-                        <div className="font-bold text-slate-900">Sumit Gupta</div>
-                        <div className="text-xs text-slate-500">Shoolini University</div>
-                    </div>
-                </div>
-             </div>
-         </div>
-      </div>
-
       {/* Mission & Vision */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

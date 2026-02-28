@@ -343,7 +343,7 @@ const Documentation: React.FC = () => {
                <h4 className="font-bold text-blue-900 text-sm mb-1">Need Help?</h4>
                <p className="text-blue-700 text-xs mb-3">Contact our partner support team.</p>
                <a 
-                 href="mailto:support@pharmelo.com" 
+                 href="mailto:pharmeloshop@gmail.com" 
                  className="text-center block text-xs bg-blue-600 text-white px-3 py-2 rounded-lg font-bold w-full hover:bg-blue-700 transition-colors"
                >
                  Contact Support

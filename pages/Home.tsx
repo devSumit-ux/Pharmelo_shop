@@ -21,7 +21,7 @@ const Home: React.FC = () => {
   return (
     <div className="animate-fade-in bg-white">
       {/* Hidden SEO Heading structure to help crawlers understand page hierarchy without affecting visual design */}
-      <h1 className="sr-only">Pharmelo: Online Medicine Order & Pickup in Solan, Himachal Pradesh. Founded by Sumit Gupta.</h1>
+      <h1 className="sr-only">Pharmelo: Online Medicine Order & Pickup in Solan, Himachal Pradesh.</h1>
       
       <Hero />
       <AboutPharmelo />

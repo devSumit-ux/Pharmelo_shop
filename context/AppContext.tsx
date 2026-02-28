@@ -14,7 +14,7 @@ const defaultConfig: AppConfig = {
   twitter_url: '#',
   instagram_url: '#',
   linkedin_url: '#',
-  contact_email: 'hello@pharmelo.com'
+  contact_email: 'pharmeloshop@gmail.com'
 };
 
 const AppContext = createContext<AppContextType>({

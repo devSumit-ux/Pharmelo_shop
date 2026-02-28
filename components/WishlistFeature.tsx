@@ -85,9 +85,9 @@ const PAST_BOOKINGS = [
 ];
 
 const DOCTORS = [
-  { id: 1, name: 'Dr. Rajesh Sharma', specialty: 'General Physician', experience: '15 Years', available: '10:00 AM - 02:00 PM', phone: '+919876543210', fee: 500, degree: 'MBBS, MD (General Medicine)', license: 'MCI-12345', about: 'Dr. Rajesh Sharma is a highly experienced General Physician with over 15 years of practice. He specializes in treating common illnesses, managing chronic conditions like diabetes and hypertension, and providing preventive care.', slots: ['10:00 AM', '11:00 AM', '12:30 PM', '01:30 PM'] },
-  { id: 2, name: 'Dr. Anita Verma', specialty: 'Pediatrician', experience: '10 Years', available: '04:00 PM - 08:00 PM', phone: '+919876543211', fee: 700, degree: 'MBBS, MD (Pediatrics)', license: 'MCI-67890', about: 'Dr. Anita Verma is a dedicated Pediatrician known for her compassionate care towards children. She has extensive experience in managing childhood illnesses, vaccinations, and developmental monitoring.', slots: ['04:00 PM', '05:30 PM', '06:00 PM', '07:30 PM'] },
-  { id: 3, name: 'Dr. Vikram Singh', specialty: 'Orthopedic', experience: '20 Years', available: '09:00 AM - 01:00 PM', phone: '+919876543212', fee: 800, degree: 'MBBS, MS (Orthopedics)', license: 'MCI-54321', about: 'Dr. Vikram Singh is a renowned Orthopedic surgeon specializing in joint replacements, sports injuries, and fracture management. He brings 20 years of surgical and clinical expertise.', slots: ['09:00 AM', '10:30 AM', '11:30 AM', '12:30 PM'] },
+  { id: 1, name: 'Dr. Rajesh Sharma', specialty: 'General Physician', experience: '15 Years', available: '10:00 AM - 02:00 PM', phone: '+919876543210', fee: 500, degree: 'MBBS, MD (General Medicine)', license: 'MCI-12345', about: 'Dr. Rajesh Sharma is a highly experienced General Physician with over 15 years of practice. He specializes in treating common illnesses, managing chronic conditions like diabetes and hypertension, and providing preventive care.', slots: ['10:00 AM', '11:00 AM', '12:30 PM', '01:30 PM'], image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=256&auto=format&fit=crop' },
+  { id: 2, name: 'Dr. Anita Verma', specialty: 'Pediatrician', experience: '10 Years', available: '04:00 PM - 08:00 PM', phone: '+919876543211', fee: 700, degree: 'MBBS, MD (Pediatrics)', license: 'MCI-67890', about: 'Dr. Anita Verma is a dedicated Pediatrician known for her compassionate care towards children. She has extensive experience in managing childhood illnesses, vaccinations, and developmental monitoring.', slots: ['04:00 PM', '05:30 PM', '06:00 PM', '07:30 PM'], image: 'https://images.unsplash.com/photo-1594824432258-f6a111de1ce0?q=80&w=256&auto=format&fit=crop' },
+  { id: 3, name: 'Dr. Vikram Singh', specialty: 'Orthopedic', experience: '20 Years', available: '09:00 AM - 01:00 PM', phone: '+919876543212', fee: 800, degree: 'MBBS, MS (Orthopedics)', license: 'MCI-54321', about: 'Dr. Vikram Singh is a renowned Orthopedic surgeon specializing in joint replacements, sports injuries, and fracture management. He brings 20 years of surgical and clinical expertise.', slots: ['09:00 AM', '10:30 AM', '11:30 AM', '12:30 PM'], image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=256&auto=format&fit=crop' },
 ];
 
 // --- Internal App Components ---
@@ -106,6 +106,10 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, sharedRecords, activeT
   const [showDoctorModal, setShowDoctorModal] = useState<any>(null);
   const [viewDoctorDetails, setViewDoctorDetails] = useState<any>(null);
   const [bookingTime, setBookingTime] = useState('');
+  const [bookingFor, setBookingFor] = useState<'self' | 'other'>('self');
+  const [patientName, setPatientName] = useState('Demo User');
+  const [patientAddress, setPatientAddress] = useState('Solan, HP');
+  const [patientProblem, setPatientProblem] = useState('');
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -596,9 +600,12 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, sharedRecords, activeT
                   {DOCTORS.filter(d => d.name.toLowerCase().includes(doctorSearchQuery.toLowerCase()) || d.specialty.toLowerCase().includes(doctorSearchQuery.toLowerCase())).map(doc => (
                      <div key={doc.id} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
                         <div className="flex justify-between items-start mb-3">
-                           <div>
-                              <h3 className="font-bold text-slate-900">{doc.name}</h3>
-                              <p className="text-xs font-medium text-emerald-600">{doc.specialty}</p>
+                           <div className="flex items-center gap-3">
+                              <img src={doc.image} alt={doc.name} className="w-12 h-12 rounded-full object-cover border-2 border-emerald-100" referrerPolicy="no-referrer" />
+                              <div>
+                                 <h3 className="font-bold text-slate-900">{doc.name}</h3>
+                                 <p className="text-xs font-medium text-emerald-600">{doc.specialty}</p>
+                              </div>
                            </div>
                            <div className="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full">
                               {doc.experience}
@@ -937,9 +944,7 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, sharedRecords, activeT
                
                <div className="flex-1 overflow-y-auto p-6 space-y-6">
                   <div className="flex items-center gap-4">
-                     <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
-                        <User size={40} />
-                     </div>
+                     <img src={viewDoctorDetails.image} alt={viewDoctorDetails.name} className="w-20 h-20 rounded-full object-cover border-4 border-emerald-50 shadow-sm" referrerPolicy="no-referrer" />
                      <div>
                         <h2 className="text-2xl font-bold text-slate-900">{viewDoctorDetails.name}</h2>
                         <p className="text-emerald-600 font-medium">{viewDoctorDetails.specialty}</p>
@@ -1018,50 +1023,124 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, sharedRecords, activeT
                   <button onClick={() => setShowDoctorModal(null)} className="p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors"><X size={16} /></button>
                </div>
                
-               <div className="mb-6">
-                  <div className="font-bold text-slate-900 text-lg">{showDoctorModal.name}</div>
-                  <div className="text-sm text-emerald-600 font-medium mb-4">{showDoctorModal.specialty}</div>
-                  <div className="text-sm font-bold text-slate-900 mb-4">Consultation Fee: ₹{showDoctorModal.fee}</div>
+               <div className="flex-1 overflow-y-auto pr-2 -mr-2 mb-6 space-y-6">
+                  <div>
+                     <div className="flex items-center gap-3 mb-4">
+                        <img src={showDoctorModal.image} alt={showDoctorModal.name} className="w-12 h-12 rounded-full object-cover border-2 border-emerald-100" referrerPolicy="no-referrer" />
+                        <div>
+                           <div className="font-bold text-slate-900 text-lg">{showDoctorModal.name}</div>
+                           <div className="text-sm text-emerald-600 font-medium">{showDoctorModal.specialty}</div>
+                        </div>
+                     </div>
+                     <div className="text-sm font-bold text-slate-900 mb-4">Consultation Fee: ₹{showDoctorModal.fee}</div>
+                  </div>
                   
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-3">Select Available Slot</label>
-                  <div className="grid grid-cols-3 gap-3 mb-6">
-                     {showDoctorModal.slots.map((slot: string) => (
-                        <button
-                           key={slot}
-                           onClick={() => setBookingTime(slot)}
-                           className={`py-2 rounded-xl text-sm font-bold border transition-colors ${bookingTime === slot ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-600'}`}
+                  <div>
+                     <label className="block text-xs font-bold text-slate-500 uppercase mb-3">Select Available Slot</label>
+                     <div className="grid grid-cols-3 gap-3">
+                        {showDoctorModal.slots.map((slot: string) => (
+                           <button
+                              key={slot}
+                              onClick={() => setBookingTime(slot)}
+                              className={`py-2 rounded-xl text-sm font-bold border transition-colors ${bookingTime === slot ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-600'}`}
+                           >
+                              {slot}
+                           </button>
+                        ))}
+                     </div>
+                  </div>
+
+                  <div className="border-t border-slate-100 pt-6">
+                     <label className="block text-xs font-bold text-slate-500 uppercase mb-3">Booking For</label>
+                     <div className="flex gap-3 mb-4">
+                        <button 
+                           onClick={() => {
+                              setBookingFor('self');
+                              setPatientName('Demo User');
+                              setPatientAddress('Solan, HP');
+                           }}
+                           className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-colors ${bookingFor === 'self' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-900'}`}
                         >
-                           {slot}
+                           Myself
                         </button>
-                     ))}
+                        <button 
+                           onClick={() => {
+                              setBookingFor('other');
+                              setPatientName('');
+                              setPatientAddress('');
+                           }}
+                           className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-colors ${bookingFor === 'other' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-900'}`}
+                        >
+                           Someone Else
+                        </button>
+                     </div>
+
+                     <div className="space-y-3">
+                        <div>
+                           <label className="block text-xs font-bold text-slate-500 mb-1">Patient Name</label>
+                           <input 
+                              type="text" 
+                              value={patientName}
+                              onChange={e => setPatientName(e.target.value)}
+                              placeholder="Enter patient name"
+                              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500" 
+                           />
+                        </div>
+                        <div>
+                           <label className="block text-xs font-bold text-slate-500 mb-1">Address</label>
+                           <input 
+                              type="text" 
+                              value={patientAddress}
+                              onChange={e => setPatientAddress(e.target.value)}
+                              placeholder="Enter patient address"
+                              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500" 
+                           />
+                        </div>
+                        <div>
+                           <label className="block text-xs font-bold text-slate-500 mb-1">Problem / Symptoms</label>
+                           <textarea 
+                              value={patientProblem}
+                              onChange={e => setPatientProblem(e.target.value)}
+                              placeholder="Briefly describe the problem..."
+                              rows={2}
+                              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500 resize-none" 
+                           />
+                        </div>
+                     </div>
                   </div>
                </div>
 
-               <button 
-                  onClick={() => {
-                     if(!bookingTime) return alert('Please select a time slot');
-                     
-                     const formattedTime = bookingTime;
+               <div className="pt-4 border-t border-slate-100">
+                  <button 
+                     onClick={() => {
+                        if(!bookingTime) return alert('Please select a time slot');
+                        if(!patientName.trim()) return alert('Please enter patient name');
+                        if(!patientAddress.trim()) return alert('Please enter patient address');
+                        if(!patientProblem.trim()) return alert('Please describe the problem');
+                        
+                        const formattedTime = bookingTime;
 
-                     setSharedBookings((prev: any) => [{
-                        id: `#A${Math.floor(1000 + Math.random() * 9000)}`,
-                        items: [`Appointment with ${showDoctorModal.name}`],
-                        date: `Today, ${formattedTime}`,
-                        status: 'Confirmed',
-                        total: showDoctorModal.fee,
-                        source: 'app'
-                     }, ...prev]);
-                     
-                     setToast({msg: 'Appointment Confirmed!', visible: true});
-                     setTimeout(() => setToast({msg: '', visible: false}), 3000);
-                     setShowDoctorModal(null);
-                     setBookingTime('');
-                     setActiveTab('bookings');
-                  }}
-                  className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold shadow-xl shadow-emerald-600/30 active:scale-95 transition-transform"
-               >
-                  Confirm Booking
-               </button>
+                        setSharedBookings((prev: any) => [{
+                           id: `#A${Math.floor(1000 + Math.random() * 9000)}`,
+                           items: [`Appointment with ${showDoctorModal.name}`, `Patient: ${patientName}`],
+                           date: `Today, ${formattedTime}`,
+                           status: 'Confirmed',
+                           total: showDoctorModal.fee,
+                           source: 'app'
+                        }, ...prev]);
+                        
+                        setToast({msg: 'Appointment Confirmed!', visible: true});
+                        setTimeout(() => setToast({msg: '', visible: false}), 3000);
+                        setShowDoctorModal(null);
+                        setBookingTime('');
+                        setPatientProblem('');
+                        setActiveTab('bookings');
+                     }}
+                     className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold shadow-xl shadow-emerald-600/30 active:scale-95 transition-transform"
+                  >
+                     Confirm Booking
+                  </button>
+               </div>
             </div>
          </div>
       )}
@@ -1100,6 +1179,7 @@ const WhatsAppApp = ({ sharedRecords, onOrderPlaced, onRecordAdded, onBack }: { 
   const [isTyping, setIsTyping] = useState(false);
   const [step, setStep] = useState(0);
   const [flow, setFlow] = useState<'none' | 'medicine' | 'doctor'>('none');
+  const [bookingDetails, setBookingDetails] = useState({ time: '', name: '', address: '', problem: '' });
 
   const handleSend = (text: string = inputText, isImage: boolean = false) => {
     if (!text && !isImage) return;
@@ -1193,14 +1273,36 @@ const WhatsAppApp = ({ sharedRecords, onOrderPlaced, onRecordAdded, onBack }: { 
           setStep(11);
         } else if (step === 11) {
           const appointmentTime = text.toUpperCase();
-          const orderId = `#A${Math.floor(1000 + Math.random() * 9000)}`;
-          setMessages(prev => [...prev, { id: Date.now(), text: `✅ Appointment confirmed with Dr. Sharma at ${appointmentTime}.\nConsultation Fee: ₹500\n\nYou will receive a reminder 30 minutes before your visit.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+          setBookingDetails(prev => ({ ...prev, time: appointmentTime }));
+          setMessages(prev => [...prev, { id: Date.now(), text: `Great! Are you booking this appointment for yourself or someone else? Reply "Myself" or "Someone else".`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
           setStep(12);
+        } else if (step === 12) {
+          if (lowerText.includes('myself') || lowerText.includes('self')) {
+             setBookingDetails(prev => ({ ...prev, name: 'Demo User', address: 'Solan, HP' }));
+             setMessages(prev => [...prev, { id: Date.now(), text: `Got it. Please briefly describe the problem or symptoms.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+             setStep(15);
+          } else {
+             setMessages(prev => [...prev, { id: Date.now(), text: `Please provide the patient's name.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+             setStep(13);
+          }
+        } else if (step === 13) {
+          setBookingDetails(prev => ({ ...prev, name: text }));
+          setMessages(prev => [...prev, { id: Date.now(), text: `Please provide the patient's address.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+          setStep(14);
+        } else if (step === 14) {
+          setBookingDetails(prev => ({ ...prev, address: text }));
+          setMessages(prev => [...prev, { id: Date.now(), text: `Please briefly describe the problem or symptoms.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+          setStep(15);
+        } else if (step === 15) {
+          setBookingDetails(prev => ({ ...prev, problem: text }));
+          const orderId = `#A${Math.floor(1000 + Math.random() * 9000)}`;
+          setMessages(prev => [...prev, { id: Date.now(), text: `✅ Appointment confirmed with Dr. Sharma at ${bookingDetails.time}.\nPatient: ${bookingDetails.name || 'Demo User'}\nConsultation Fee: ₹500\n\nYou will receive a reminder 30 minutes before your visit.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+          setStep(16);
           
           onOrderPlaced({
             id: orderId,
-            items: [`Appointment with Dr. Sharma at ${appointmentTime}`],
-            date: `Today, ${appointmentTime}`,
+            items: [`Appointment with Dr. Sharma at ${bookingDetails.time}`, `Patient: ${bookingDetails.name || 'Demo User'}`],
+            date: `Today, ${bookingDetails.time}`,
             status: 'Confirmed',
             total: 500,
             source: 'whatsapp'

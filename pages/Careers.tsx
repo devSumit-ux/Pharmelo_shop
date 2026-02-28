@@ -57,7 +57,7 @@ const Careers: React.FC = () => {
                        </div>
                     </div>
                  </div>
-                 <a href="mailto:careers@pharmelo.com?subject=Application for React Intern" className="px-6 py-3 rounded-xl bg-slate-50 text-slate-900 font-bold text-sm group-hover:bg-slate-900 group-hover:text-white transition-colors">
+                 <a href="mailto:pharmeloshop@gmail.com?subject=Application for React Intern" className="px-6 py-3 rounded-xl bg-slate-50 text-slate-900 font-bold text-sm group-hover:bg-slate-900 group-hover:text-white transition-colors">
                     Apply Now
                  </a>
               </div>
@@ -77,7 +77,7 @@ const Careers: React.FC = () => {
                        </div>
                     </div>
                  </div>
-                 <a href="mailto:careers@pharmelo.com?subject=Application for Marketing Intern" className="px-6 py-3 rounded-xl bg-slate-50 text-slate-900 font-bold text-sm group-hover:bg-slate-900 group-hover:text-white transition-colors">
+                 <a href="mailto:pharmeloshop@gmail.com?subject=Application for Marketing Intern" className="px-6 py-3 rounded-xl bg-slate-50 text-slate-900 font-bold text-sm group-hover:bg-slate-900 group-hover:text-white transition-colors">
                     Apply Now
                  </a>
               </div>
@@ -92,7 +92,7 @@ const Careers: React.FC = () => {
               We are always looking for talented pharmacy students, developers, and designers. 
               Drop us an email and tell us how you can help Pharmelo grow.
            </p>
-           <a href="mailto:hello@pharmelo.com" className="inline-flex items-center gap-2 bg-white text-slate-900 px-8 py-4 rounded-xl font-bold hover:bg-emerald-400 transition-colors">
+           <a href="mailto:pharmeloshop@gmail.com" className="inline-flex items-center gap-2 bg-white text-slate-900 px-8 py-4 rounded-xl font-bold hover:bg-emerald-400 transition-colors">
               Email Founder <ArrowRight size={20} />
            </a>
         </div>

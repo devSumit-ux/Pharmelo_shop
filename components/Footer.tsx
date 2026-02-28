@@ -101,7 +101,7 @@ const Footer: React.FC = () => {
         </div>
         
         <div className="border-t border-slate-800 pt-8 text-center text-slate-500 text-sm">
-          &copy; {new Date().getFullYear()} {config.app_name} Technologies Inc. Founded by Sumit Gupta.
+          &copy; {new Date().getFullYear()} {config.app_name}
         </div>
       </div>
 
