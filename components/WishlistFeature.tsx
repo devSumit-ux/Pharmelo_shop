@@ -85,16 +85,15 @@ const PAST_BOOKINGS = [
 ];
 
 const DOCTORS = [
-  { id: 1, name: 'Dr. Rajesh Sharma', specialty: 'General Physician', experience: '15 Years', available: '10:00 AM - 02:00 PM', phone: '+919876543210' },
-  { id: 2, name: 'Dr. Anita Verma', specialty: 'Pediatrician', experience: '10 Years', available: '04:00 PM - 08:00 PM', phone: '+919876543211' },
-  { id: 3, name: 'Dr. Vikram Singh', specialty: 'Orthopedic', experience: '20 Years', available: '09:00 AM - 01:00 PM', phone: '+919876543212' },
+  { id: 1, name: 'Dr. Rajesh Sharma', specialty: 'General Physician', experience: '15 Years', available: '10:00 AM - 02:00 PM', phone: '+919876543210', fee: 500 },
+  { id: 2, name: 'Dr. Anita Verma', specialty: 'Pediatrician', experience: '10 Years', available: '04:00 PM - 08:00 PM', phone: '+919876543211', fee: 700 },
+  { id: 3, name: 'Dr. Vikram Singh', specialty: 'Orthopedic', experience: '20 Years', available: '09:00 AM - 01:00 PM', phone: '+919876543212', fee: 800 },
 ];
 
 // --- Internal App Components ---
 
-const PharmeloApp = ({ sharedBookings, setSharedBookings, sharedRecords, onBack }: { sharedBookings: any[], setSharedBookings: any, sharedRecords: any[], onBack: () => void }) => {
+const PharmeloApp = ({ sharedBookings, setSharedBookings, sharedRecords, activeTab, setActiveTab, onBack }: { sharedBookings: any[], setSharedBookings: any, sharedRecords: any[], activeTab: Tab, setActiveTab: (t: Tab) => void, onBack: () => void }) => {
   const [screen, setScreen] = useState<Screen>('login');
-  const [activeTab, setActiveTab] = useState<Tab>('home');
   const [bookingTab, setBookingTab] = useState<BookingTab>('active');
   const [cart, setCart] = useState<{product: Product, qty: number}[]>([]);
   const [showCart, setShowCart] = useState(false);
@@ -134,6 +133,7 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, sharedRecords, onBack 
   // Search State
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [doctorSearchQuery, setDoctorSearchQuery] = useState('');
 
   const showToastMsg = (msg: string) => {
     setToast({ msg, visible: true });
@@ -578,8 +578,21 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, sharedRecords, onBack 
                   <p className="text-sm text-slate-500">Book appointments instantly.</p>
                </div>
                
+               <div className="px-6 mb-6">
+                  <div className="bg-white p-3 rounded-2xl flex items-center gap-3 shadow-sm border border-slate-100">
+                     <Search size={20} className="text-slate-400" />
+                     <input 
+                        type="text" 
+                        placeholder="Search doctors or specialties..." 
+                        className="bg-transparent border-none outline-none w-full text-sm text-slate-700"
+                        value={doctorSearchQuery}
+                        onChange={e => setDoctorSearchQuery(e.target.value)}
+                     />
+                  </div>
+               </div>
+
                <div className="px-6 space-y-4">
-                  {DOCTORS.map(doc => (
+                  {DOCTORS.filter(d => d.name.toLowerCase().includes(doctorSearchQuery.toLowerCase()) || d.specialty.toLowerCase().includes(doctorSearchQuery.toLowerCase())).map(doc => (
                      <div key={doc.id} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
                         <div className="flex justify-between items-start mb-3">
                            <div>
@@ -590,8 +603,13 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, sharedRecords, onBack 
                               {doc.experience}
                            </div>
                         </div>
-                        <div className="flex items-center gap-1 text-xs text-slate-500 mb-4">
-                           <Clock size={12} /> {doc.available}
+                        <div className="flex items-center justify-between text-xs text-slate-500 mb-4">
+                           <div className="flex items-center gap-1">
+                              <Clock size={12} /> {doc.available}
+                           </div>
+                           <div className="font-bold text-slate-900">
+                              ₹{doc.fee}
+                           </div>
                         </div>
                         <div className="flex gap-2">
                            <button 
@@ -612,6 +630,9 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, sharedRecords, onBack 
                         </div>
                      </div>
                   ))}
+                  {DOCTORS.filter(d => d.name.toLowerCase().includes(doctorSearchQuery.toLowerCase()) || d.specialty.toLowerCase().includes(doctorSearchQuery.toLowerCase())).length === 0 && (
+                     <div className="text-center py-8 text-slate-500 text-sm">No doctors found matching your search.</div>
+                  )}
                </div>
             </div>
          )}
@@ -919,6 +940,7 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, sharedRecords, onBack 
                <div className="mb-6">
                   <div className="font-bold text-slate-900 text-lg">{showDoctorModal.name}</div>
                   <div className="text-sm text-emerald-600 font-medium mb-4">{showDoctorModal.specialty}</div>
+                  <div className="text-sm font-bold text-slate-900 mb-4">Consultation Fee: ₹{showDoctorModal.fee}</div>
                   
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Select Time</label>
                   <input 
@@ -945,7 +967,7 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, sharedRecords, onBack 
                         items: [`Appointment with ${showDoctorModal.name}`],
                         date: `Today, ${formattedTime}`,
                         status: 'Confirmed',
-                        total: 500,
+                        total: showDoctorModal.fee,
                         source: 'app'
                      }, ...prev]);
                      
@@ -1044,6 +1066,12 @@ const WhatsAppApp = ({ sharedRecords, onOrderPlaced, onRecordAdded, onBack }: { 
         } else if (step === 2 && lowerText === 'yes') {
           const orderId = `#${Math.floor(1000 + Math.random() * 9000)}`;
           setMessages(prev => [...prev, { id: Date.now(), text: `✅ Order confirmed! Your Order ID is ${orderId}.\n\nIt will be ready for pickup in 15 mins. You can track it in the Pharmelo app.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+          
+          setTimeout(() => {
+             setMessages(prev => [...prev, { id: Date.now(), text: `I see this prescription is from Dr. Sharma. Would you like to book a follow-up appointment with him? Reply 'YES' to book or 'NO' to skip.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+             setIsTyping(false);
+          }, 1500);
+
           setStep(3);
           
           onOrderPlaced({
@@ -1058,11 +1086,21 @@ const WhatsAppApp = ({ sharedRecords, onOrderPlaced, onRecordAdded, onBack }: { 
           onRecordAdded({
             id: Date.now(),
             hospital: 'City Clinic',
-            doctor: 'Dr. Unknown',
+            doctor: 'Dr. Sharma',
             date: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             type: 'Prescription',
             notes: 'Uploaded via WhatsApp AI'
           });
+          return;
+        } else if (step === 3) {
+            if (lowerText === 'yes') {
+                setFlow('doctor');
+                setStep(11);
+                setMessages(prev => [...prev, { id: Date.now(), text: `Great! Dr. Sharma (General Physician) is available today at:\n- 10:00 AM\n- 11:30 AM\n- 02:00 PM\n\nPlease reply with your preferred time.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+            } else {
+                setStep(4);
+                setMessages(prev => [...prev, { id: Date.now(), text: `Okay, no problem. Let me know if you need anything else!`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+            }
         } else {
           setMessages(prev => [...prev, { id: Date.now(), text: 'I am a demo bot. Please upload a prescription (click the camera icon) to test the AI flow!', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
         }
@@ -1075,7 +1113,7 @@ const WhatsAppApp = ({ sharedRecords, onOrderPlaced, onRecordAdded, onBack }: { 
         } else if (step === 11) {
           const appointmentTime = text.toUpperCase();
           const orderId = `#A${Math.floor(1000 + Math.random() * 9000)}`;
-          setMessages(prev => [...prev, { id: Date.now(), text: `✅ Appointment confirmed with Dr. Sharma at ${appointmentTime}.\n\nYou will receive a reminder 30 minutes before your visit.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+          setMessages(prev => [...prev, { id: Date.now(), text: `✅ Appointment confirmed with Dr. Sharma at ${appointmentTime}.\nConsultation Fee: ₹500\n\nYou will receive a reminder 30 minutes before your visit.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
           setStep(12);
           
           onOrderPlaced({
@@ -1168,6 +1206,7 @@ const WhatsAppApp = ({ sharedRecords, onOrderPlaced, onRecordAdded, onBack }: { 
 const WishlistFeature: React.FC = () => {
   const [currentUrl, setCurrentUrl] = useState(`https://pharmelo.com/demo?session=${Math.floor(Math.random() * 10000)}`);
   const [activeApp, setActiveApp] = useState<'home' | 'pharmelo' | 'whatsapp'>('home');
+  const [pharmeloTab, setPharmeloTab] = useState<Tab>('home');
   const [sharedBookings, setSharedBookings] = useState<any[]>([]);
   const [sharedRecords, setSharedRecords] = useState<any[]>([
     { id: 1, hospital: 'City Hospital', doctor: 'Dr. Sharma', date: '10 Feb 2024', type: 'Prescription', notes: 'Fever and cold medication' }
@@ -1280,7 +1319,15 @@ const WishlistFeature: React.FC = () => {
                     <div className="flex-1 overflow-hidden bg-slate-50 font-sans relative">
                         {/* Push Notification Banner */}
                         <div className={`absolute top-10 left-4 right-4 z-[80] transition-all duration-500 ${pushNotification ? 'translate-y-0 opacity-100' : '-translate-y-24 opacity-0 pointer-events-none'}`}>
-                            <div className="bg-white/90 backdrop-blur-md rounded-2xl p-3 shadow-xl border border-white/20 cursor-pointer" onClick={() => { setPushNotification(null); setActiveApp('pharmelo'); }}>
+                            <div className="bg-white/90 backdrop-blur-md rounded-2xl p-3 shadow-xl border border-white/20 cursor-pointer" onClick={() => { 
+                                setPushNotification(null); 
+                                setActiveApp('pharmelo'); 
+                                if (pushNotification?.title.includes('Appointment')) {
+                                   setPharmeloTab('bookings');
+                                } else {
+                                   setPharmeloTab('bookings');
+                                }
+                            }}>
                                 <div className="flex items-center gap-2 mb-1">
                                     <div className="w-5 h-5 bg-emerald-600 rounded flex items-center justify-center">
                                         <Pill size={12} className="text-white" />
@@ -1321,7 +1368,7 @@ const WishlistFeature: React.FC = () => {
 
                         {/* Pharmelo App */}
                         <div className={`absolute inset-0 transition-opacity duration-300 ${activeApp === 'pharmelo' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}>
-                           <PharmeloApp sharedBookings={sharedBookings} setSharedBookings={setSharedBookings} sharedRecords={sharedRecords} onBack={() => setActiveApp('home')} />
+                           <PharmeloApp sharedBookings={sharedBookings} setSharedBookings={setSharedBookings} sharedRecords={sharedRecords} activeTab={pharmeloTab} setActiveTab={setPharmeloTab} onBack={() => setActiveApp('home')} />
                         </div>
                         
                         {/* WhatsApp App */}
