@@ -7,13 +7,13 @@ import {
   Heart, Zap, ShieldCheck, CheckCircle2, ArrowRight,
   LogOut, Settings, CreditCard, Clock, Check, QrCode,
   X, Upload, FileText, Loader2, Camera, Smartphone,
-  Ticket, Pill, MessageCircle, ChevronLeft
+  Ticket, Pill, MessageCircle, ChevronLeft, Stethoscope
 } from 'lucide-react';
 
 // --- Types & Mock Data ---
 
 type Screen = 'login' | 'app';
-type Tab = 'home' | 'search' | 'bookings' | 'profile';
+type Tab = 'home' | 'search' | 'bookings' | 'profile' | 'doctors';
 type BookingTab = 'active' | 'history';
 
 interface Product {
@@ -84,6 +84,12 @@ const PAST_BOOKINGS = [
   { id: '#8842', items: ['Band-Aids x2', 'Dettol Antiseptic x1'], date: '05 Feb 2024', status: 'Completed', total: 90 },
 ];
 
+const DOCTORS = [
+  { id: 1, name: 'Dr. Rajesh Sharma', specialty: 'General Physician', experience: '15 Years', available: '10:00 AM - 02:00 PM', phone: '+919876543210' },
+  { id: 2, name: 'Dr. Anita Verma', specialty: 'Pediatrician', experience: '10 Years', available: '04:00 PM - 08:00 PM', phone: '+919876543211' },
+  { id: 3, name: 'Dr. Vikram Singh', specialty: 'Orthopedic', experience: '20 Years', available: '09:00 AM - 01:00 PM', phone: '+919876543212' },
+];
+
 // --- Internal App Components ---
 
 const PharmeloApp = ({ sharedBookings, setSharedBookings, onBack }: { sharedBookings: any[], setSharedBookings: any, onBack: () => void }) => {
@@ -98,6 +104,8 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, onBack }: { sharedBook
   
   // Modals
   const [showQr, setShowQr] = useState<string | null>(null);
+  const [showDoctorModal, setShowDoctorModal] = useState<any>(null);
+  const [bookingTime, setBookingTime] = useState('');
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -561,6 +569,52 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, onBack }: { sharedBook
            </div>
          )}
 
+         {/* DOCTORS TAB */}
+         {activeTab === 'doctors' && (
+            <div className="animate-fade-in pb-24">
+               <div className="px-6 pt-6 pb-4">
+                  <h2 className="text-2xl font-bold text-slate-900 mb-1">Find a Doctor</h2>
+                  <p className="text-sm text-slate-500">Book appointments instantly.</p>
+               </div>
+               
+               <div className="px-6 space-y-4">
+                  {DOCTORS.map(doc => (
+                     <div key={doc.id} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                        <div className="flex justify-between items-start mb-3">
+                           <div>
+                              <h3 className="font-bold text-slate-900">{doc.name}</h3>
+                              <p className="text-xs font-medium text-emerald-600">{doc.specialty}</p>
+                           </div>
+                           <div className="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full">
+                              {doc.experience}
+                           </div>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs text-slate-500 mb-4">
+                           <Clock size={12} /> {doc.available}
+                        </div>
+                        <div className="flex gap-2">
+                           <button 
+                              onClick={() => setShowDoctorModal(doc)}
+                              className="flex-1 bg-slate-900 text-white py-2 rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors"
+                           >
+                              Book in App
+                           </button>
+                           <button 
+                              onClick={() => {
+                                 const msg = `Hi, I would like to book an appointment with ${doc.name} (${doc.specialty}) for today. Please let me know the available time slots.`;
+                                 window.open(`https://wa.me/${doc.phone.replace('+', '')}?text=${encodeURIComponent(msg)}`, '_blank');
+                              }}
+                              className="flex-1 bg-[#25D366] text-white py-2 rounded-xl text-xs font-bold hover:bg-[#128C7E] transition-colors flex items-center justify-center gap-1"
+                           >
+                              <MessageCircle size={14} /> WhatsApp
+                           </button>
+                        </div>
+                     </div>
+                  ))}
+               </div>
+            </div>
+         )}
+
          {/* PROFILE TAB */}
          {activeTab === 'profile' && (
            <div className="px-6 space-y-6">
@@ -805,11 +859,68 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, onBack }: { sharedBook
          </div>
       )}
 
+      {/* Doctor Booking Modal */}
+      {showDoctorModal && (
+         <div className="absolute inset-0 z-50 flex items-end justify-center bg-slate-900/40 backdrop-blur-sm">
+            <div className="bg-white w-full rounded-t-[2.5rem] p-6 max-h-[85%] flex flex-col animate-slide-up shadow-2xl">
+               <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-bold text-slate-900">Book Appointment</h3>
+                  <button onClick={() => setShowDoctorModal(null)} className="p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors"><X size={16} /></button>
+               </div>
+               
+               <div className="mb-6">
+                  <div className="font-bold text-slate-900 text-lg">{showDoctorModal.name}</div>
+                  <div className="text-sm text-emerald-600 font-medium mb-4">{showDoctorModal.specialty}</div>
+                  
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Select Time</label>
+                  <input 
+                     type="time" 
+                     value={bookingTime}
+                     onChange={e => setBookingTime(e.target.value)}
+                     className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 mb-4" 
+                  />
+               </div>
+
+               <button 
+                  onClick={() => {
+                     if(!bookingTime) return alert('Please select a time');
+                     
+                     // Format time
+                     const [hours, minutes] = bookingTime.split(':');
+                     const hour = parseInt(hours, 10);
+                     const ampm = hour >= 12 ? 'PM' : 'AM';
+                     const formattedHour = hour % 12 || 12;
+                     const formattedTime = `${formattedHour}:${minutes} ${ampm}`;
+
+                     setSharedBookings((prev: any) => [{
+                        id: `#A${Math.floor(1000 + Math.random() * 9000)}`,
+                        items: [`Appointment with ${showDoctorModal.name}`],
+                        date: `Today, ${formattedTime}`,
+                        status: 'Confirmed',
+                        total: 500,
+                        source: 'app'
+                     }, ...prev]);
+                     
+                     setToast({msg: 'Appointment Confirmed!', visible: true});
+                     setTimeout(() => setToast({msg: '', visible: false}), 3000);
+                     setShowDoctorModal(null);
+                     setBookingTime('');
+                     setActiveTab('bookings');
+                  }}
+                  className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold shadow-xl shadow-emerald-600/30 active:scale-95 transition-transform"
+               >
+                  Confirm Booking
+               </button>
+            </div>
+         </div>
+      )}
+
       {/* Bottom Navigation */}
       <div className="absolute bottom-0 w-full bg-white border-t border-slate-100 py-3 px-6 pb-6 flex justify-between items-center z-20">
          {[
             { id: 'home', icon: Home, label: 'Home' },
             { id: 'search', icon: Search, label: 'Search' },
+            { id: 'doctors', icon: Stethoscope, label: 'Doctors' },
             { id: 'bookings', icon: Calendar, label: 'Bookings' },
             { id: 'profile', icon: User, label: 'Profile' },
          ].map(tab => (
@@ -832,11 +943,12 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, onBack }: { sharedBook
 
 const WhatsAppApp = ({ onOrderPlaced, onBack }: { onOrderPlaced: (booking: any) => void, onBack: () => void }) => {
   const [messages, setMessages] = useState([
-    { id: 1, text: 'Hi! I am Pharmelo AI. Send me your prescription or type what you need.', sender: 'bot', time: '10:00 AM', isImage: false }
+    { id: 1, text: 'Hi! I am Pharmelo AI. How can I help you today?\n\n1️⃣ Order Medicine\n2️⃣ Book Doctor Appointment\n\nReply with 1 or 2.', sender: 'bot', time: '10:00 AM', isImage: false }
   ]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [step, setStep] = useState(0);
+  const [flow, setFlow] = useState<'none' | 'medicine' | 'doctor'>('none');
 
   const handleSend = (text: string = inputText, isImage: boolean = false) => {
     if (!text && !isImage) return;
@@ -847,32 +959,64 @@ const WhatsAppApp = ({ onOrderPlaced, onBack }: { onOrderPlaced: (booking: any) 
     setIsTyping(true);
 
     setTimeout(() => {
-      if (step === 0 && isImage) {
-        setMessages(prev => [...prev, { id: Date.now(), text: 'Scanning prescription... 🔍', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
-        
-        setTimeout(() => {
-           setMessages(prev => [...prev, { id: Date.now(), text: 'I found:\n- CALPOL (₹40)\n- Delcon (₹65)\n- Levolin (₹55)\n- Meftal-p (₹45)\n\nTotal: ₹205\n\nReply "YES" to confirm your order.', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
-           setStep(1);
-           setIsTyping(false);
-        }, 1500);
-      } else if (step === 1 && text.toLowerCase() === 'yes') {
-        const orderId = `#${Math.floor(1000 + Math.random() * 9000)}`;
-        setMessages(prev => [...prev, { id: Date.now(), text: `✅ Order confirmed! Your Order ID is ${orderId}.\n\nIt will be ready for pickup in 15 mins. You can track it in the Pharmelo app.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
-        setStep(2);
-        setIsTyping(false);
-        
-        onOrderPlaced({
-          id: orderId,
-          items: ['CALPOL', 'Delcon', 'Levolin', 'Meftal-p'],
-          date: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          status: 'Ready for Pickup',
-          total: 205,
-          source: 'whatsapp'
-        });
-      } else {
-        setMessages(prev => [...prev, { id: Date.now(), text: 'I am a demo bot. Please upload a prescription (click the camera icon) to test the AI flow!', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
-        setIsTyping(false);
+      const lowerText = text.toLowerCase().trim();
+
+      // Initial Selection
+      if (step === 0) {
+        if (lowerText === '1' || lowerText.includes('medicine') || lowerText.includes('order')) {
+          setFlow('medicine');
+          setStep(1);
+          setMessages(prev => [...prev, { id: Date.now(), text: 'Great! Please send me your prescription (click the camera icon) or type the medicines you need.', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+        } else if (lowerText === '2' || lowerText.includes('doctor') || lowerText.includes('book')) {
+          setFlow('doctor');
+          setStep(10);
+          setMessages(prev => [...prev, { id: Date.now(), text: 'Sure! Please tell me the doctor\'s name or the specialty you are looking for (e.g., "Dr. Sharma" or "Pediatrician").', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+        } else {
+          setMessages(prev => [...prev, { id: Date.now(), text: 'Please reply with "1" for Medicine or "2" for Doctor Appointment.', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+        }
+      } 
+      // Medicine Flow
+      else if (flow === 'medicine') {
+        if (step === 1 && isImage) {
+          setMessages(prev => [...prev, { id: Date.now(), text: 'Scanning prescription... 🔍', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+          
+          setTimeout(() => {
+             setMessages(prev => [...prev, { id: Date.now(), text: 'I found:\n- CALPOL (₹40)\n- Delcon (₹65)\n- Levolin (₹55)\n- Meftal-p (₹45)\n\nTotal: ₹205\n\nReply "YES" to confirm your order.', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+             setStep(2);
+             setIsTyping(false);
+          }, 1500);
+          return; // Skip the default setIsTyping(false) below
+        } else if (step === 2 && lowerText === 'yes') {
+          const orderId = `#${Math.floor(1000 + Math.random() * 9000)}`;
+          setMessages(prev => [...prev, { id: Date.now(), text: `✅ Order confirmed! Your Order ID is ${orderId}.\n\nIt will be ready for pickup in 15 mins. You can track it in the Pharmelo app.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+          setStep(3);
+          
+          onOrderPlaced({
+            id: orderId,
+            items: ['CALPOL', 'Delcon', 'Levolin', 'Meftal-p'],
+            date: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            status: 'Ready for Pickup',
+            total: 205,
+            source: 'whatsapp'
+          });
+        } else {
+          setMessages(prev => [...prev, { id: Date.now(), text: 'I am a demo bot. Please upload a prescription (click the camera icon) to test the AI flow!', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+        }
       }
+      // Doctor Flow
+      else if (flow === 'doctor') {
+        if (step === 10) {
+          setMessages(prev => [...prev, { id: Date.now(), text: `I found Dr. Sharma (General Physician) at Solan Clinic.\n\nAvailable slots for today:\n- 10:00 AM\n- 11:30 AM\n- 02:00 PM\n\nPlease reply with your preferred time.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+          setStep(11);
+        } else if (step === 11) {
+          setMessages(prev => [...prev, { id: Date.now(), text: `✅ Appointment confirmed with Dr. Sharma at ${text.toUpperCase()}.\n\nYou will receive a reminder 30 minutes before your visit.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+          setStep(12);
+        } else {
+          setMessages(prev => [...prev, { id: Date.now(), text: 'Your appointment is already booked. Type "Hi" to start over.', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+        }
+      }
+
+      setIsTyping(false);
     }, 1000);
   };
 
