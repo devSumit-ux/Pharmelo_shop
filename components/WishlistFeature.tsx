@@ -85,9 +85,9 @@ const PAST_BOOKINGS = [
 ];
 
 const DOCTORS = [
-  { id: 1, name: 'Dr. Rajesh Sharma', specialty: 'General Physician', experience: '15 Years', available: '10:00 AM - 02:00 PM', phone: '+919876543210', fee: 500 },
-  { id: 2, name: 'Dr. Anita Verma', specialty: 'Pediatrician', experience: '10 Years', available: '04:00 PM - 08:00 PM', phone: '+919876543211', fee: 700 },
-  { id: 3, name: 'Dr. Vikram Singh', specialty: 'Orthopedic', experience: '20 Years', available: '09:00 AM - 01:00 PM', phone: '+919876543212', fee: 800 },
+  { id: 1, name: 'Dr. Rajesh Sharma', specialty: 'General Physician', experience: '15 Years', available: '10:00 AM - 02:00 PM', phone: '+919876543210', fee: 500, degree: 'MBBS, MD (General Medicine)', license: 'MCI-12345', about: 'Dr. Rajesh Sharma is a highly experienced General Physician with over 15 years of practice. He specializes in treating common illnesses, managing chronic conditions like diabetes and hypertension, and providing preventive care.', slots: ['10:00 AM', '11:00 AM', '12:30 PM', '01:30 PM'] },
+  { id: 2, name: 'Dr. Anita Verma', specialty: 'Pediatrician', experience: '10 Years', available: '04:00 PM - 08:00 PM', phone: '+919876543211', fee: 700, degree: 'MBBS, MD (Pediatrics)', license: 'MCI-67890', about: 'Dr. Anita Verma is a dedicated Pediatrician known for her compassionate care towards children. She has extensive experience in managing childhood illnesses, vaccinations, and developmental monitoring.', slots: ['04:00 PM', '05:30 PM', '06:00 PM', '07:30 PM'] },
+  { id: 3, name: 'Dr. Vikram Singh', specialty: 'Orthopedic', experience: '20 Years', available: '09:00 AM - 01:00 PM', phone: '+919876543212', fee: 800, degree: 'MBBS, MS (Orthopedics)', license: 'MCI-54321', about: 'Dr. Vikram Singh is a renowned Orthopedic surgeon specializing in joint replacements, sports injuries, and fracture management. He brings 20 years of surgical and clinical expertise.', slots: ['09:00 AM', '10:30 AM', '11:30 AM', '12:30 PM'] },
 ];
 
 // --- Internal App Components ---
@@ -104,6 +104,7 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, sharedRecords, activeT
   // Modals
   const [showQr, setShowQr] = useState<string | null>(null);
   const [showDoctorModal, setShowDoctorModal] = useState<any>(null);
+  const [viewDoctorDetails, setViewDoctorDetails] = useState<any>(null);
   const [bookingTime, setBookingTime] = useState('');
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -613,19 +614,16 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, sharedRecords, activeT
                         </div>
                         <div className="flex gap-2">
                            <button 
+                              onClick={() => setViewDoctorDetails(doc)}
+                              className="flex-1 bg-emerald-50 text-emerald-700 py-2 rounded-xl text-xs font-bold hover:bg-emerald-100 transition-colors"
+                           >
+                              View Details
+                           </button>
+                           <button 
                               onClick={() => setShowDoctorModal(doc)}
                               className="flex-1 bg-slate-900 text-white py-2 rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors"
                            >
                               Book in App
-                           </button>
-                           <button 
-                              onClick={() => {
-                                 const msg = `Hi, I would like to book an appointment with ${doc.name} (${doc.specialty}) for today. Please let me know the available time slots.`;
-                                 window.open(`https://wa.me/${doc.phone.replace('+', '')}?text=${encodeURIComponent(msg)}`, '_blank');
-                              }}
-                              className="flex-1 bg-[#25D366] text-white py-2 rounded-xl text-xs font-bold hover:bg-[#128C7E] transition-colors flex items-center justify-center gap-1"
-                           >
-                              <MessageCircle size={14} /> WhatsApp
                            </button>
                         </div>
                      </div>
@@ -928,6 +926,89 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, sharedRecords, activeT
          </div>
       )}
 
+      {/* Doctor Details Modal */}
+      {viewDoctorDetails && (
+         <div className="absolute inset-0 z-50 flex items-end justify-center bg-slate-900/40 backdrop-blur-sm">
+            <div className="bg-white w-full h-[90%] rounded-t-[2.5rem] flex flex-col animate-slide-up shadow-2xl overflow-hidden">
+               <div className="flex justify-between items-center p-6 border-b border-slate-100">
+                  <h3 className="text-xl font-bold text-slate-900">Doctor Profile</h3>
+                  <button onClick={() => setViewDoctorDetails(null)} className="p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors"><X size={16} /></button>
+               </div>
+               
+               <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                  <div className="flex items-center gap-4">
+                     <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
+                        <User size={40} />
+                     </div>
+                     <div>
+                        <h2 className="text-2xl font-bold text-slate-900">{viewDoctorDetails.name}</h2>
+                        <p className="text-emerald-600 font-medium">{viewDoctorDetails.specialty}</p>
+                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                     <div className="bg-slate-50 p-4 rounded-2xl">
+                        <div className="text-xs text-slate-500 font-bold uppercase mb-1">Experience</div>
+                        <div className="font-bold text-slate-900">{viewDoctorDetails.experience}</div>
+                     </div>
+                     <div className="bg-slate-50 p-4 rounded-2xl">
+                        <div className="text-xs text-slate-500 font-bold uppercase mb-1">Consultation Fee</div>
+                        <div className="font-bold text-slate-900">₹{viewDoctorDetails.fee}</div>
+                     </div>
+                  </div>
+
+                  <div>
+                     <h4 className="font-bold text-slate-900 mb-2">About</h4>
+                     <p className="text-sm text-slate-600 leading-relaxed">{viewDoctorDetails.about}</p>
+                  </div>
+
+                  <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
+                     <h4 className="font-bold text-emerald-900 mb-3 flex items-center gap-2">
+                        <Clock size={18} className="text-emerald-600" />
+                        Available Slots Today
+                     </h4>
+                     <div className="flex flex-wrap gap-2">
+                        {viewDoctorDetails.slots.map((slot: string) => (
+                           <span key={slot} className="bg-white text-emerald-700 px-3 py-1.5 rounded-lg text-xs font-bold border border-emerald-200">
+                              {slot}
+                           </span>
+                        ))}
+                     </div>
+                  </div>
+
+                  <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
+                     <h4 className="font-bold text-emerald-900 mb-3 flex items-center gap-2">
+                        <ShieldCheck size={18} className="text-emerald-600" />
+                        Verified Credentials
+                     </h4>
+                     <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                           <span className="text-emerald-700">Degree</span>
+                           <span className="font-bold text-emerald-900">{viewDoctorDetails.degree}</span>
+                        </div>
+                        <div className="flex justify-between">
+                           <span className="text-emerald-700">License No.</span>
+                           <span className="font-bold text-emerald-900">{viewDoctorDetails.license}</span>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               <div className="p-6 border-t border-slate-100 bg-white">
+                  <button 
+                     onClick={() => {
+                        setShowDoctorModal(viewDoctorDetails);
+                        setViewDoctorDetails(null);
+                     }}
+                     className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold shadow-xl shadow-slate-900/20 active:scale-95 transition-transform"
+                  >
+                     Book Appointment
+                  </button>
+               </div>
+            </div>
+         </div>
+      )}
+
       {/* Doctor Booking Modal */}
       {showDoctorModal && (
          <div className="absolute inset-0 z-50 flex items-end justify-center bg-slate-900/40 backdrop-blur-sm">
@@ -942,25 +1023,25 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, sharedRecords, activeT
                   <div className="text-sm text-emerald-600 font-medium mb-4">{showDoctorModal.specialty}</div>
                   <div className="text-sm font-bold text-slate-900 mb-4">Consultation Fee: ₹{showDoctorModal.fee}</div>
                   
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Select Time</label>
-                  <input 
-                     type="time" 
-                     value={bookingTime}
-                     onChange={e => setBookingTime(e.target.value)}
-                     className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 mb-4" 
-                  />
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-3">Select Available Slot</label>
+                  <div className="grid grid-cols-3 gap-3 mb-6">
+                     {showDoctorModal.slots.map((slot: string) => (
+                        <button
+                           key={slot}
+                           onClick={() => setBookingTime(slot)}
+                           className={`py-2 rounded-xl text-sm font-bold border transition-colors ${bookingTime === slot ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-600'}`}
+                        >
+                           {slot}
+                        </button>
+                     ))}
+                  </div>
                </div>
 
                <button 
                   onClick={() => {
-                     if(!bookingTime) return alert('Please select a time');
+                     if(!bookingTime) return alert('Please select a time slot');
                      
-                     // Format time
-                     const [hours, minutes] = bookingTime.split(':');
-                     const hour = parseInt(hours, 10);
-                     const ampm = hour >= 12 ? 'PM' : 'AM';
-                     const formattedHour = hour % 12 || 12;
-                     const formattedTime = `${formattedHour}:${minutes} ${ampm}`;
+                     const formattedTime = bookingTime;
 
                      setSharedBookings((prev: any) => [{
                         id: `#A${Math.floor(1000 + Math.random() * 9000)}`,
