@@ -13,7 +13,7 @@ import {
 // --- Types & Mock Data ---
 
 type Screen = 'login' | 'app';
-type Tab = 'home' | 'search' | 'bookings' | 'profile' | 'doctors';
+type Tab = 'home' | 'search' | 'bookings' | 'profile' | 'doctors' | 'records';
 type BookingTab = 'active' | 'history';
 
 interface Product {
@@ -92,7 +92,7 @@ const DOCTORS = [
 
 // --- Internal App Components ---
 
-const PharmeloApp = ({ sharedBookings, setSharedBookings, onBack }: { sharedBookings: any[], setSharedBookings: any, onBack: () => void }) => {
+const PharmeloApp = ({ sharedBookings, setSharedBookings, sharedRecords, onBack }: { sharedBookings: any[], setSharedBookings: any, sharedRecords: any[], onBack: () => void }) => {
   const [screen, setScreen] = useState<Screen>('login');
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const [bookingTab, setBookingTab] = useState<BookingTab>('active');
@@ -116,7 +116,8 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, onBack }: { sharedBook
     if (sharedBookings.length > prevBookingsLength.current) {
       const newBooking = sharedBookings[0];
       if (newBooking && newBooking.source === 'whatsapp') {
-        setToast({msg: 'New order received from WhatsApp AI!', visible: true});
+        const isDoctor = newBooking.items[0]?.includes('Appointment');
+        setToast({msg: isDoctor ? 'New appointment booked via AI!' : 'New order received from WhatsApp AI!', visible: true});
         setTimeout(() => setToast({msg: '', visible: false}), 4000);
         setHasUnreadNotification(true);
       }
@@ -615,6 +616,53 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, onBack }: { sharedBook
             </div>
          )}
 
+         {/* RECORDS TAB */}
+         {activeTab === 'records' && (
+            <div className="animate-fade-in pb-24">
+               <div className="px-6 pt-6 pb-4">
+                  <h2 className="text-2xl font-bold text-slate-900 mb-1">Health Records</h2>
+                  <p className="text-sm text-slate-500">Your prescriptions and medical history.</p>
+               </div>
+               
+               <div className="px-6 space-y-4">
+                  {sharedRecords.map(record => (
+                     <div key={record.id} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                        <div className="flex justify-between items-start mb-3">
+                           <div>
+                              <h3 className="font-bold text-slate-900">{record.hospital}</h3>
+                              <p className="text-xs font-medium text-emerald-600">{record.doctor}</p>
+                           </div>
+                           <div className="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-full">
+                              {record.date}
+                           </div>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-slate-500 mb-3 bg-slate-50 p-2 rounded-lg">
+                           <FileText size={14} className="text-emerald-600" />
+                           <span className="font-medium">{record.type}</span>
+                        </div>
+                        {record.notes && (
+                           <div className="text-sm text-slate-600 mb-3 line-clamp-2">
+                              {record.notes}
+                           </div>
+                        )}
+                        <button className="w-full bg-emerald-50 text-emerald-700 py-2 rounded-xl text-xs font-bold hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2">
+                           <Eye size={14} /> View Document
+                        </button>
+                     </div>
+                  ))}
+                  {sharedRecords.length === 0 && (
+                     <div className="text-center py-12">
+                        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                           <FileText size={24} className="text-slate-400" />
+                        </div>
+                        <h3 className="text-lg font-bold text-slate-900 mb-1">No Records Found</h3>
+                        <p className="text-slate-500 text-sm">Upload a prescription to get started.</p>
+                     </div>
+                  )}
+               </div>
+            </div>
+         )}
+
          {/* PROFILE TAB */}
          {activeTab === 'profile' && (
            <div className="px-6 space-y-6">
@@ -919,8 +967,8 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, onBack }: { sharedBook
       <div className="absolute bottom-0 w-full bg-white border-t border-slate-100 py-3 px-6 pb-6 flex justify-between items-center z-20">
          {[
             { id: 'home', icon: Home, label: 'Home' },
-            { id: 'search', icon: Search, label: 'Search' },
             { id: 'doctors', icon: Stethoscope, label: 'Doctors' },
+            { id: 'records', icon: FileText, label: 'Records' },
             { id: 'bookings', icon: Calendar, label: 'Bookings' },
             { id: 'profile', icon: User, label: 'Profile' },
          ].map(tab => (
@@ -941,9 +989,9 @@ const PharmeloApp = ({ sharedBookings, setSharedBookings, onBack }: { sharedBook
 
 // --- WhatsApp Simulation Component ---
 
-const WhatsAppApp = ({ onOrderPlaced, onBack }: { onOrderPlaced: (booking: any) => void, onBack: () => void }) => {
+const WhatsAppApp = ({ sharedRecords, onOrderPlaced, onRecordAdded, onBack }: { sharedRecords: any[], onOrderPlaced: (booking: any) => void, onRecordAdded: (record: any) => void, onBack: () => void }) => {
   const [messages, setMessages] = useState([
-    { id: 1, text: 'Hi! I am Pharmelo AI. How can I help you today?\n\n1️⃣ Order Medicine\n2️⃣ Book Doctor Appointment\n\nReply with 1 or 2.', sender: 'bot', time: '10:00 AM', isImage: false }
+    { id: 1, text: 'Hi! I am Pharmelo AI. How can I help you today?\n\n1️⃣ Order Medicine\n2️⃣ Book Doctor Appointment\n3️⃣ View Health Records\n\nReply with 1, 2, or 3.', sender: 'bot', time: '10:00 AM', isImage: false }
   ]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -971,8 +1019,15 @@ const WhatsAppApp = ({ onOrderPlaced, onBack }: { onOrderPlaced: (booking: any) 
           setFlow('doctor');
           setStep(10);
           setMessages(prev => [...prev, { id: Date.now(), text: 'Sure! Please tell me the doctor\'s name or the specialty you are looking for (e.g., "Dr. Sharma" or "Pediatrician").', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+        } else if (lowerText === '3' || lowerText.includes('record') || lowerText.includes('health')) {
+          setFlow('none');
+          setStep(0);
+          const recordsText = sharedRecords.length > 0 
+            ? sharedRecords.map(r => `- ${r.date}: ${r.type} from ${r.hospital} (${r.doctor})`).join('\n')
+            : 'You have no health records yet.';
+          setMessages(prev => [...prev, { id: Date.now(), text: `Here are your recent health records:\n\n${recordsText}\n\nReply with 1 or 2 to order medicine or book a doctor.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
         } else {
-          setMessages(prev => [...prev, { id: Date.now(), text: 'Please reply with "1" for Medicine or "2" for Doctor Appointment.', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+          setMessages(prev => [...prev, { id: Date.now(), text: 'Please reply with "1" for Medicine, "2" for Doctor Appointment, or "3" for Health Records.', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
         }
       } 
       // Medicine Flow
@@ -999,6 +1054,15 @@ const WhatsAppApp = ({ onOrderPlaced, onBack }: { onOrderPlaced: (booking: any) 
             total: 205,
             source: 'whatsapp'
           });
+
+          onRecordAdded({
+            id: Date.now(),
+            hospital: 'City Clinic',
+            doctor: 'Dr. Unknown',
+            date: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            type: 'Prescription',
+            notes: 'Uploaded via WhatsApp AI'
+          });
         } else {
           setMessages(prev => [...prev, { id: Date.now(), text: 'I am a demo bot. Please upload a prescription (click the camera icon) to test the AI flow!', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
         }
@@ -1009,8 +1073,19 @@ const WhatsAppApp = ({ onOrderPlaced, onBack }: { onOrderPlaced: (booking: any) 
           setMessages(prev => [...prev, { id: Date.now(), text: `I found Dr. Sharma (General Physician) at Solan Clinic.\n\nAvailable slots for today:\n- 10:00 AM\n- 11:30 AM\n- 02:00 PM\n\nPlease reply with your preferred time.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
           setStep(11);
         } else if (step === 11) {
-          setMessages(prev => [...prev, { id: Date.now(), text: `✅ Appointment confirmed with Dr. Sharma at ${text.toUpperCase()}.\n\nYou will receive a reminder 30 minutes before your visit.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+          const appointmentTime = text.toUpperCase();
+          const orderId = `#A${Math.floor(1000 + Math.random() * 9000)}`;
+          setMessages(prev => [...prev, { id: Date.now(), text: `✅ Appointment confirmed with Dr. Sharma at ${appointmentTime}.\n\nYou will receive a reminder 30 minutes before your visit.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
           setStep(12);
+          
+          onOrderPlaced({
+            id: orderId,
+            items: [`Appointment with Dr. Sharma at ${appointmentTime}`],
+            date: `Today, ${appointmentTime}`,
+            status: 'Confirmed',
+            total: 500,
+            source: 'whatsapp'
+          });
         } else {
           setMessages(prev => [...prev, { id: Date.now(), text: 'Your appointment is already booked. Type "Hi" to start over.', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
         }
@@ -1094,6 +1169,9 @@ const WishlistFeature: React.FC = () => {
   const [currentUrl, setCurrentUrl] = useState(`https://pharmelo.com/demo?session=${Math.floor(Math.random() * 10000)}`);
   const [activeApp, setActiveApp] = useState<'home' | 'pharmelo' | 'whatsapp'>('home');
   const [sharedBookings, setSharedBookings] = useState<any[]>([]);
+  const [sharedRecords, setSharedRecords] = useState<any[]>([
+    { id: 1, hospital: 'City Hospital', doctor: 'Dr. Sharma', date: '10 Feb 2024', type: 'Prescription', notes: 'Fever and cold medication' }
+  ]);
   const [pushNotification, setPushNotification] = useState<{title: string, message: string} | null>(null);
   
   useEffect(() => {
@@ -1243,18 +1321,23 @@ const WishlistFeature: React.FC = () => {
 
                         {/* Pharmelo App */}
                         <div className={`absolute inset-0 transition-opacity duration-300 ${activeApp === 'pharmelo' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}>
-                           <PharmeloApp sharedBookings={sharedBookings} setSharedBookings={setSharedBookings} onBack={() => setActiveApp('home')} />
+                           <PharmeloApp sharedBookings={sharedBookings} setSharedBookings={setSharedBookings} sharedRecords={sharedRecords} onBack={() => setActiveApp('home')} />
                         </div>
                         
                         {/* WhatsApp App */}
                         <div className={`absolute inset-0 transition-opacity duration-300 ${activeApp === 'whatsapp' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}>
-                           <WhatsAppApp onOrderPlaced={(booking) => {
+                           <WhatsAppApp sharedRecords={sharedRecords} onOrderPlaced={(booking) => {
                               setSharedBookings(prev => [booking, ...prev]);
+                              const isDoctor = booking.items[0]?.includes('Appointment');
                               setPushNotification({
-                                title: 'Order Confirmed!',
-                                message: `Your prescription order ${booking.id} has been placed successfully.`
+                                title: isDoctor ? 'Appointment Confirmed!' : 'Order Confirmed!',
+                                message: isDoctor 
+                                  ? `Your ${booking.items[0]} is confirmed.`
+                                  : `Your prescription order ${booking.id} has been placed successfully.`
                               });
                               setTimeout(() => setPushNotification(null), 5000);
+                           }} onRecordAdded={(record) => {
+                              setSharedRecords(prev => [record, ...prev]);
                            }} onBack={() => setActiveApp('home')} />
                         </div>
                     </div>
