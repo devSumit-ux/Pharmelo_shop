@@ -12,7 +12,7 @@ import { useAppConfig } from '../context/AppContext';
 import { analyzeBatchFeedback, generateNewsletter } from '../services/geminiService';
 import { AdminStats, AppConfig, RoadmapPhase } from '../types';
 
-type Tab = 'overview' | 'waitlist' | 'partners' | 'feedback' | 'campaigns' | 'roadmap' | 'settings';
+type Tab = 'overview' | 'waitlist' | 'partners' | 'feedback' | 'campaigns' | 'roadmap' | 'survey_addon' | 'settings';
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -455,6 +455,7 @@ const AdminDashboard: React.FC = () => {
           <NavItem id="partners" icon={Store} label="Pharmacy Partners" />
           <NavItem id="roadmap" icon={Map} label="Roadmap Config" />
           <NavItem id="feedback" icon={MessageSquare} label="Feedback & AI" />
+          <NavItem id="survey_addon" icon={ClipboardList} label="Survey Add-on" />
           <NavItem id="campaigns" icon={Mail} label="Auto-Pilot Campaigns" />
           
           <div className="px-4 py-2 mt-6 text-xs font-bold text-slate-600 uppercase tracking-wider">System</div>
@@ -776,6 +777,82 @@ const AdminDashboard: React.FC = () => {
                          </div>
                      ))
                 )}
+            </div>
+          </div>
+        )}
+
+        {/* SURVEY ADD-ON TAB */}
+        {activeTab === 'survey_addon' && (
+          <div className="animate-fade-in space-y-6">
+            <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-emerald-50 to-white">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-emerald-100 text-emerald-600 rounded-xl">
+                    <ClipboardList size={24} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-lg">Survey Add-on Management</h3>
+                    <p className="text-sm text-slate-500">Manage your new survey add-on features and responses.</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => exportToCSV(surveys, 'survey_addon')} className="text-xs font-bold text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl hover:bg-slate-50 flex items-center gap-2 bg-white shadow-sm">
+                    <Download size={14} /> Export Data
+                  </button>
+                </div>
+              </div>
+              
+              <div className="p-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Total Responses</h4>
+                    <div className="text-3xl font-black text-slate-900">{surveys.length}</div>
+                  </div>
+                  <div className="bg-emerald-50 p-6 rounded-2xl border border-emerald-100">
+                    <h4 className="text-sm font-bold text-emerald-600 uppercase tracking-wider mb-2">Active Survey</h4>
+                    <div className="text-lg font-bold text-emerald-900">Pharmelo Validation V1</div>
+                    <div className="text-xs text-emerald-700 mt-1">Running since launch</div>
+                  </div>
+                  <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100 flex flex-col justify-center items-start">
+                    <h4 className="text-sm font-bold text-blue-600 uppercase tracking-wider mb-2">Quick Actions</h4>
+                    <button className="text-sm font-bold text-white bg-blue-600 px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-colors w-full">
+                      Create New Survey
+                    </button>
+                  </div>
+                </div>
+
+                <h4 className="font-bold text-slate-900 mb-4 text-lg">Recent Survey Submissions</h4>
+                <div className="space-y-4">
+                  {surveys.length === 0 ? (
+                    <div className="text-center p-12 text-slate-400 bg-slate-50 rounded-2xl border border-slate-100 border-dashed">
+                      No survey responses found yet.
+                    </div>
+                  ) : (
+                    surveys.map(s => (
+                      <div key={s.id} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex justify-between items-center mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className="px-2.5 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-md uppercase">
+                              {s.role || 'User'}
+                            </span>
+                            <span className="text-xs text-slate-400">{new Date(s.created_at).toLocaleString()}</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {Object.entries(s.answers || s.responses || {}).map(([key, val]: any) => (
+                            key !== 'additional_comments' && (
+                              <div key={key} className="px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-sm text-slate-700 w-full md:w-[calc(50%-0.5rem)]">
+                                <span className="font-bold text-slate-500 block text-xs mb-1">{key.replace(/_/g, ' ')}</span>
+                                {val}
+                              </div>
+                            )
+                          ))}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         )}

@@ -128,6 +128,21 @@ const Navbar: React.FC = () => {
                 {item.label}
               </NavLink>
             ))}
+            <NavLink
+              to="/wishlist"
+              style={{ transitionDelay: `${navItems.length * 50}ms` }}
+              className={({ isActive }) =>
+                `block text-lg font-medium px-6 py-4 rounded-2xl transition-all duration-300 transform ${
+                  isOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
+                } ${
+                  isActive 
+                    ? 'text-blue-600 bg-blue-50/80 shadow-sm' 
+                    : 'text-slate-600 hover:bg-slate-50'
+                }`
+              }
+            >
+              Try Beta
+            </NavLink>
             <div 
               className={`pt-6 px-2 transition-all duration-500 delay-300 transform ${
                 isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'

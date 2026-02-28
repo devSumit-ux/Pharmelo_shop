@@ -7,7 +7,7 @@ import {
   Heart, Zap, ShieldCheck, CheckCircle2, ArrowRight,
   LogOut, Settings, CreditCard, Clock, Check, QrCode,
   X, Upload, FileText, Loader2, Camera, Smartphone,
-  Ticket
+  Ticket, Pill, MessageCircle, ChevronLeft
 } from 'lucide-react';
 
 // --- Types & Mock Data ---
@@ -86,21 +86,35 @@ const PAST_BOOKINGS = [
 
 // --- Internal App Components ---
 
-const PharmeloApp = () => {
+const PharmeloApp = ({ sharedBookings, setSharedBookings, onBack }: { sharedBookings: any[], setSharedBookings: any, onBack: () => void }) => {
   const [screen, setScreen] = useState<Screen>('login');
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const [bookingTab, setBookingTab] = useState<BookingTab>('active');
   const [cart, setCart] = useState<{product: Product, qty: number}[]>([]);
-  const [bookings, setBookings] = useState<{id: string, items: string[], date: string, status: string, total: number}[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [toast, setToast] = useState<{msg: string, visible: boolean}>({msg: '', visible: false});
   const [currentLocation, setCurrentLocation] = useState('Solan, HP');
+  const [hasUnreadNotification, setHasUnreadNotification] = useState(false);
   
   // Modals
   const [showQr, setShowQr] = useState<string | null>(null);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+
+  const prevBookingsLength = useRef(sharedBookings.length);
+
+  useEffect(() => {
+    if (sharedBookings.length > prevBookingsLength.current) {
+      const newBooking = sharedBookings[0];
+      if (newBooking && newBooking.source === 'whatsapp') {
+        setToast({msg: 'New order received from WhatsApp AI!', visible: true});
+        setTimeout(() => setToast({msg: '', visible: false}), 4000);
+        setHasUnreadNotification(true);
+      }
+      prevBookingsLength.current = sharedBookings.length;
+    }
+  }, [sharedBookings]);
   
   // Login State - PREFILLED GENERIC DEMO
   const [email, setEmail] = useState('demo@pharmelo.com');
@@ -162,7 +176,7 @@ const PharmeloApp = () => {
     };
     setIsLoading(true);
     setTimeout(() => {
-        setBookings([newBooking, ...bookings]);
+        setSharedBookings([newBooking, ...sharedBookings]);
         setCart([]);
         setShowCart(false);
         setBookingTab('active');
@@ -207,6 +221,9 @@ const PharmeloApp = () => {
   if (screen === 'login') {
     return (
       <div className="h-full flex flex-col bg-slate-50 p-8 justify-center animate-fade-in relative overflow-hidden font-sans">
+         <button onClick={onBack} className="absolute top-12 left-6 text-slate-400 hover:text-slate-600 z-20 p-2 bg-white rounded-full shadow-sm border border-slate-100 transition-transform active:scale-90">
+            <ChevronLeft size={20} />
+         </button>
          <div className="absolute top-0 left-0 w-full h-48 bg-emerald-50 rounded-b-[3rem] -z-0"></div>
          <div className="z-10 bg-white p-8 rounded-3xl shadow-xl shadow-emerald-900/5">
             <div className="flex justify-center mb-6">
@@ -266,16 +283,22 @@ const PharmeloApp = () => {
       {(activeTab === 'home' || activeTab === 'profile') && (
          <div className="bg-emerald-600 px-6 pt-14 pb-24 rounded-b-[2.5rem] relative shrink-0 z-10 shadow-lg shadow-emerald-900/10">
             <div className="flex justify-between items-start">
-               {activeTab === 'home' ? (
-                 <div>
-                    <div className="text-emerald-100 text-xs font-medium tracking-wider mb-1">WELCOME BACK</div>
-                    <div className="text-white text-2xl font-bold">Find Medicines</div>
-                 </div>
-               ) : (
-                 <div className="text-white text-2xl font-bold">Profile</div>
-               )}
-               <button className="bg-emerald-500/50 p-2 rounded-xl text-white backdrop-blur-sm hover:bg-emerald-500/70 transition-colors">
+               <div className="flex items-start gap-3">
+                  <button onClick={onBack} className="text-white hover:bg-white/20 p-1.5 rounded-full transition-colors -ml-2 mt-0.5 active:scale-90">
+                     <ChevronLeft size={22} />
+                  </button>
+                  {activeTab === 'home' ? (
+                    <div>
+                       <div className="text-emerald-100 text-xs font-medium tracking-wider mb-1">WELCOME BACK</div>
+                       <div className="text-white text-2xl font-bold">Find Medicines</div>
+                    </div>
+                  ) : (
+                    <div className="text-white text-2xl font-bold">Profile</div>
+                  )}
+               </div>
+               <button className="bg-emerald-500/50 p-2 rounded-xl text-white backdrop-blur-sm hover:bg-emerald-500/70 transition-colors relative" onClick={() => setHasUnreadNotification(false)}>
                  <Bell size={20} />
+                 {hasUnreadNotification && <div className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-emerald-600"></div>}
                </button>
             </div>
             
@@ -369,8 +392,13 @@ const PharmeloApp = () => {
 
          {/* SEARCH TAB */}
          {activeTab === 'search' && (
-           <div className="px-5 h-full flex flex-col pt-4">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6 px-1">Browse Medicines</h2>
+           <div className="px-5 h-full flex flex-col pt-12">
+              <div className="flex items-center gap-3 mb-6 px-1">
+                 <button onClick={onBack} className="text-slate-400 hover:text-slate-600 p-1.5 bg-white rounded-full shadow-sm border border-slate-100 active:scale-90">
+                    <ChevronLeft size={20} />
+                 </button>
+                 <h2 className="text-2xl font-bold text-slate-900">Browse Medicines</h2>
+              </div>
               
               {/* Search Bar */}
               <div className="relative mb-6">
@@ -433,8 +461,13 @@ const PharmeloApp = () => {
 
          {/* BOOKINGS TAB */}
          {activeTab === 'bookings' && (
-           <div className="px-6 h-full pt-4">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">My Bookings</h2>
+           <div className="px-6 h-full pt-12">
+              <div className="flex items-center gap-3 mb-6">
+                 <button onClick={onBack} className="text-slate-400 hover:text-slate-600 p-1.5 bg-white rounded-full shadow-sm border border-slate-100 active:scale-90">
+                    <ChevronLeft size={20} />
+                 </button>
+                 <h2 className="text-2xl font-bold text-slate-900">My Bookings</h2>
+              </div>
               
               <div className="flex p-1 bg-slate-100 rounded-xl mb-6">
                  <button 
@@ -452,7 +485,7 @@ const PharmeloApp = () => {
               </div>
 
               {bookingTab === 'active' ? (
-                 bookings.length === 0 ? (
+                 sharedBookings.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-64 text-center">
                         <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4 text-slate-300">
                         <Calendar size={32} />
@@ -462,13 +495,20 @@ const PharmeloApp = () => {
                     </div>
                  ) : (
                     <div className="space-y-4">
-                        {bookings.map(booking => (
+                        {sharedBookings.map(booking => (
                         <div key={booking.id} className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden animate-slide-up">
                             <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-500"></div>
                             <div className="flex justify-between items-start mb-3">
                                 <div>
                                     <div className="text-xs text-slate-400 font-bold uppercase">Order ID</div>
-                                    <div className="text-lg font-bold text-slate-900">{booking.id}</div>
+                                    <div className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                        {booking.id}
+                                        {booking.source === 'whatsapp' && (
+                                            <span className="bg-[#25D366]/10 text-[#25D366] text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                <MessageCircle size={10} /> AI Order
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                                 <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full">{booking.status}</span>
                             </div>
@@ -788,10 +828,129 @@ const PharmeloApp = () => {
   );
 };
 
+// --- WhatsApp Simulation Component ---
+
+const WhatsAppApp = ({ onOrderPlaced, onBack }: { onOrderPlaced: (booking: any) => void, onBack: () => void }) => {
+  const [messages, setMessages] = useState([
+    { id: 1, text: 'Hi! I am Pharmelo AI. Send me your prescription or type what you need.', sender: 'bot', time: '10:00 AM', isImage: false }
+  ]);
+  const [inputText, setInputText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [step, setStep] = useState(0);
+
+  const handleSend = (text: string = inputText, isImage: boolean = false) => {
+    if (!text && !isImage) return;
+    
+    const newMsg = { id: Date.now(), text: isImage ? '📷 Prescription.jpg' : text, sender: 'user', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage };
+    setMessages(prev => [...prev, newMsg]);
+    setInputText('');
+    setIsTyping(true);
+
+    setTimeout(() => {
+      if (step === 0 && isImage) {
+        setMessages(prev => [...prev, { id: Date.now(), text: 'Scanning prescription... 🔍', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+        
+        setTimeout(() => {
+           setMessages(prev => [...prev, { id: Date.now(), text: 'I found:\n- CALPOL (₹40)\n- Delcon (₹65)\n- Levolin (₹55)\n- Meftal-p (₹45)\n\nTotal: ₹205\n\nReply "YES" to confirm your order.', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+           setStep(1);
+           setIsTyping(false);
+        }, 1500);
+      } else if (step === 1 && text.toLowerCase() === 'yes') {
+        const orderId = `#${Math.floor(1000 + Math.random() * 9000)}`;
+        setMessages(prev => [...prev, { id: Date.now(), text: `✅ Order confirmed! Your Order ID is ${orderId}.\n\nIt will be ready for pickup in 15 mins. You can track it in the Pharmelo app.`, sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+        setStep(2);
+        setIsTyping(false);
+        
+        onOrderPlaced({
+          id: orderId,
+          items: ['CALPOL', 'Delcon', 'Levolin', 'Meftal-p'],
+          date: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          status: 'Ready for Pickup',
+          total: 205,
+          source: 'whatsapp'
+        });
+      } else {
+        setMessages(prev => [...prev, { id: Date.now(), text: 'I am a demo bot. Please upload a prescription (click the camera icon) to test the AI flow!', sender: 'bot', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isImage: false }]);
+        setIsTyping(false);
+      }
+    }, 1000);
+  };
+
+  return (
+    <div className="flex flex-col h-full bg-[#efeae2] font-sans relative">
+      {/* WhatsApp Header */}
+      <div className="bg-[#075e54] text-white px-4 py-3 flex items-center gap-2 z-10 shadow-md pt-12">
+         <button onClick={onBack} className="text-white hover:bg-white/20 p-1 rounded-full transition-colors -ml-2 active:scale-90">
+            <ChevronLeft size={24} />
+         </button>
+         <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden">
+            <Pill className="text-[#075e54]" size={24} />
+         </div>
+         <div className="flex-1">
+            <div className="font-bold flex items-center gap-1">Pharmelo AI <CheckCircle2 size={14} className="text-blue-400 fill-current" /></div>
+            <div className="text-xs text-emerald-100">online</div>
+         </div>
+      </div>
+      
+      {/* Chat Area */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 pb-20">
+         {messages.map(m => (
+           <div key={m.id} className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[80%] rounded-lg p-2 shadow-sm relative ${m.sender === 'user' ? 'bg-[#dcf8c6] rounded-tr-none' : 'bg-white rounded-tl-none'}`}>
+                 {m.isImage ? (
+                    <div className="w-48 h-64 bg-slate-200 rounded mb-1 flex items-center justify-center border border-slate-300 overflow-hidden relative">
+                       <img src="https://www.tribuneindia.com/sortd-service/imaginary/v22-01/jpg/large/high?url=dGhldHJpYnVuZS1zb3J0ZC1wcm8tcHJvZC1zb3J0ZC9tZWRpYTc0ZGMyNDcwLTRlNzEtMTFlZi04MGUwLTg5MTBmNjk1YjZkZS5qcGc=" alt="Prescription" className="absolute inset-0 w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    </div>
+                 ) : (
+                    <div className="text-sm text-slate-800 whitespace-pre-wrap">{m.text}</div>
+                 )}
+                 <div className="text-[10px] text-slate-400 text-right mt-1">{m.time}</div>
+              </div>
+           </div>
+         ))}
+         {isTyping && (
+           <div className="flex justify-start">
+              <div className="bg-white rounded-lg rounded-tl-none p-3 shadow-sm flex gap-1">
+                 <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
+                 <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                 <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+              </div>
+           </div>
+         )}
+      </div>
+
+      {/* Input Area */}
+      <div className="absolute bottom-0 left-0 right-0 p-2 bg-transparent pb-6">
+         <div className="flex items-center gap-2">
+            <div className="flex-1 bg-white rounded-full flex items-center px-4 py-2 shadow-sm">
+               <button onClick={() => handleSend('', true)} className="text-slate-400 hover:text-emerald-600 mr-2 transition-colors">
+                  <Camera size={20} />
+               </button>
+               <input 
+                 type="text" 
+                 placeholder="Message" 
+                 className="flex-1 bg-transparent outline-none text-sm"
+                 value={inputText}
+                 onChange={e => setInputText(e.target.value)}
+                 onKeyPress={e => e.key === 'Enter' && handleSend()}
+               />
+            </div>
+            <button onClick={() => handleSend()} className="w-10 h-10 bg-[#008f68] rounded-full flex items-center justify-center text-white shadow-sm hover:bg-[#075e54] transition-colors">
+               <ArrowRight size={20} />
+            </button>
+         </div>
+      </div>
+    </div>
+  )
+}
+
 // --- Main Wrapper Component ---
 
 const WishlistFeature: React.FC = () => {
   const [currentUrl, setCurrentUrl] = useState(`https://pharmelo.com/demo?session=${Math.floor(Math.random() * 10000)}`);
+  const [activeApp, setActiveApp] = useState<'home' | 'pharmelo' | 'whatsapp'>('home');
+  const [sharedBookings, setSharedBookings] = useState<any[]>([]);
+  const [pushNotification, setPushNotification] = useState<{title: string, message: string} | null>(null);
   
   useEffect(() => {
     // Dynamically get current window URL for the QR code
@@ -812,33 +971,32 @@ const WishlistFeature: React.FC = () => {
                 <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Live Simulator</span>
              </div>
              <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6">
-               Try the <span className="text-emerald-600">Real App</span> right now.
+               Experience the <span className="text-emerald-600">Future of Pharmacy</span>.
              </h2>
              <p className="text-slate-500 text-lg mb-8 leading-relaxed">
-               Don't just watch a video. Use the fully functional simulation on the right. 
-               Log in, search for "Paracetamol", and see how easy it is to book a pickup.
+               Try our fully functional simulation on the right. Switch to <strong>WhatsApp AI</strong>, upload a prescription, and watch the AI automatically place an order in your <strong>Pharmelo App</strong>.
              </p>
              
              <div className="space-y-6 mb-10">
                <div className="flex gap-4 group">
                  <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-emerald-600 font-bold group-hover:scale-110 transition-transform">1</div>
                  <div>
-                   <h4 className="text-slate-900 font-bold text-lg">One-Time Login</h4>
-                   <p className="text-slate-500 text-sm">Enter any details to start your session.</p>
+                   <h4 className="text-slate-900 font-bold text-lg">Open WhatsApp AI</h4>
+                   <p className="text-slate-500 text-sm">Click the WhatsApp icon on the simulated phone's home screen.</p>
                  </div>
                </div>
                <div className="flex gap-4 group">
                  <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-emerald-600 font-bold group-hover:scale-110 transition-transform">2</div>
                  <div>
-                   <h4 className="text-slate-900 font-bold text-lg">Real Inventory</h4>
-                   <p className="text-slate-500 text-sm">Browse categories or search for specific meds.</p>
+                   <h4 className="text-slate-900 font-bold text-lg">Upload Prescription</h4>
+                   <p className="text-slate-500 text-sm">Click the camera icon to simulate uploading an Rx.</p>
                  </div>
                </div>
                <div className="flex gap-4 group">
                  <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-emerald-600 font-bold group-hover:scale-110 transition-transform">3</div>
                  <div>
-                   <h4 className="text-slate-900 font-bold text-lg">Instant Booking</h4>
-                   <p className="text-slate-500 text-sm">Add to cart and confirm. No payment needed for demo.</p>
+                   <h4 className="text-slate-900 font-bold text-lg">See the Magic</h4>
+                   <p className="text-slate-500 text-sm">Confirm the order and watch the push notification appear!</p>
                  </div>
                </div>
              </div>
@@ -865,26 +1023,31 @@ const WishlistFeature: React.FC = () => {
              </div>
           </div>
 
-          {/* Right Phone Mockup */}
-          <div className="order-1 lg:order-2 flex justify-center lg:justify-end relative">
+             {/* Right Phone Mockup */}
+          <div className="order-1 lg:order-2 flex flex-col items-center lg:items-end relative">
+             
+             {/* App Switcher (Removed in favor of Home Screen) */}
+             <div className="flex bg-slate-200 p-1 rounded-full mb-6 relative z-20 shadow-sm opacity-0 pointer-events-none h-0 overflow-hidden">
+             </div>
+
              {/* Glow behind phone */}
              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-200/40 blur-[100px] rounded-full pointer-events-none mix-blend-multiply" />
              
              {/* iPhone Frame */}
-             <div className="relative border-slate-900 bg-slate-900 border-[12px] rounded-[3rem] h-[720px] w-[360px] shadow-2xl shadow-emerald-900/20 flex flex-col overflow-hidden z-10 transform hover:scale-[1.01] transition-transform duration-500">
+             <div className="relative border-slate-900 bg-slate-900 border-[14px] rounded-[3rem] h-[720px] w-[360px] shadow-2xl shadow-emerald-900/20 flex flex-col z-10 transform hover:scale-[1.01] transition-transform duration-500">
                 {/* Side Buttons */}
-                <div className="absolute -left-[16px] top-[100px] h-[40px] w-[4px] bg-slate-800 rounded-l-md"></div>
-                <div className="absolute -left-[16px] top-[160px] h-[70px] w-[4px] bg-slate-800 rounded-l-md"></div>
-                <div className="absolute -right-[16px] top-[120px] h-[80px] w-[4px] bg-slate-800 rounded-r-md"></div>
+                <div className="absolute -left-[18px] top-[100px] h-[40px] w-[4px] bg-slate-800 rounded-l-md"></div>
+                <div className="absolute -left-[18px] top-[160px] h-[70px] w-[4px] bg-slate-800 rounded-l-md"></div>
+                <div className="absolute -right-[18px] top-[120px] h-[80px] w-[4px] bg-slate-800 rounded-r-md"></div>
 
                 {/* Inner Bezel/Screen Container */}
-                <div className="h-full w-full bg-slate-50 rounded-[2.2rem] overflow-hidden flex flex-col relative border-[4px] border-slate-900 box-border">
+                <div className="h-full w-full bg-slate-50 rounded-[2rem] overflow-hidden flex flex-col relative">
                     
                     {/* Status Bar */}
-                    <div className="h-10 w-full bg-slate-50 absolute top-0 z-[60] flex items-center justify-between px-6 text-xs font-bold text-slate-900">
+                    <div className={`h-10 w-full absolute top-0 z-[60] flex items-center justify-between px-6 text-xs font-bold transition-colors ${activeApp === 'whatsapp' ? 'bg-[#075e54] text-white' : activeApp === 'home' ? 'bg-transparent text-white' : 'bg-transparent text-slate-900'}`}>
                          <span className="pl-2 w-12">9:41</span>
                          <div className="flex items-center gap-1.5 pr-2 w-12 justify-end">
-                             <div className="h-3 w-5 bg-slate-800 rounded-[4px]"></div>
+                             <div className={`h-3 w-5 rounded-[4px] ${activeApp === 'whatsapp' || activeApp === 'home' ? 'bg-white' : 'bg-slate-800'}`}></div>
                          </div>
                     </div>
                     
@@ -893,11 +1056,67 @@ const WishlistFeature: React.FC = () => {
 
                     {/* App Content */}
                     <div className="flex-1 overflow-hidden bg-slate-50 font-sans relative">
-                        <PharmeloApp />
+                        {/* Push Notification Banner */}
+                        <div className={`absolute top-10 left-4 right-4 z-[80] transition-all duration-500 ${pushNotification ? 'translate-y-0 opacity-100' : '-translate-y-24 opacity-0 pointer-events-none'}`}>
+                            <div className="bg-white/90 backdrop-blur-md rounded-2xl p-3 shadow-xl border border-white/20 cursor-pointer" onClick={() => { setPushNotification(null); setActiveApp('pharmelo'); }}>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <div className="w-5 h-5 bg-emerald-600 rounded flex items-center justify-center">
+                                        <Pill size={12} className="text-white" />
+                                    </div>
+                                    <span className="text-xs font-bold text-slate-800 uppercase tracking-wide">Pharmelo</span>
+                                    <span className="text-[10px] text-slate-400 ml-auto">now</span>
+                                </div>
+                                <div className="font-bold text-slate-900 text-sm">{pushNotification?.title}</div>
+                                <div className="text-xs text-slate-600 line-clamp-2">{pushNotification?.message}</div>
+                            </div>
+                        </div>
+
+                        {/* Home Screen */}
+                        <div className={`absolute inset-0 transition-opacity duration-300 ${activeApp === 'home' ? 'opacity-100 z-20' : 'opacity-0 z-0 pointer-events-none'}`}>
+                            <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900">
+                                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop" alt="Wallpaper" className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay" />
+                            </div>
+                            <div className="relative z-10 pt-24 px-6 grid grid-cols-4 gap-4">
+                                {/* Pharmelo App Icon */}
+                                <div className="flex flex-col items-center gap-1 cursor-pointer group" onClick={() => setActiveApp('pharmelo')}>
+                                    <div className="w-14 h-14 bg-white rounded-2xl shadow-lg flex items-center justify-center group-hover:scale-105 transition-transform">
+                                        <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center">
+                                            <Pill size={24} className="text-white" />
+                                        </div>
+                                    </div>
+                                    <span className="text-white text-[10px] font-medium drop-shadow-md">Pharmelo</span>
+                                </div>
+
+                                {/* WhatsApp App Icon */}
+                                <div className="flex flex-col items-center gap-1 cursor-pointer group" onClick={() => setActiveApp('whatsapp')}>
+                                    <div className="w-14 h-14 bg-[#25D366] rounded-2xl shadow-lg flex items-center justify-center group-hover:scale-105 transition-transform">
+                                        <MessageCircle size={32} className="text-white" fill="currentColor" />
+                                    </div>
+                                    <span className="text-white text-[10px] font-medium drop-shadow-md">WhatsApp</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Pharmelo App */}
+                        <div className={`absolute inset-0 transition-opacity duration-300 ${activeApp === 'pharmelo' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}>
+                           <PharmeloApp sharedBookings={sharedBookings} setSharedBookings={setSharedBookings} onBack={() => setActiveApp('home')} />
+                        </div>
+                        
+                        {/* WhatsApp App */}
+                        <div className={`absolute inset-0 transition-opacity duration-300 ${activeApp === 'whatsapp' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}>
+                           <WhatsAppApp onOrderPlaced={(booking) => {
+                              setSharedBookings(prev => [booking, ...prev]);
+                              setPushNotification({
+                                title: 'Order Confirmed!',
+                                message: `Your prescription order ${booking.id} has been placed successfully.`
+                              });
+                              setTimeout(() => setPushNotification(null), 5000);
+                           }} onBack={() => setActiveApp('home')} />
+                        </div>
                     </div>
 
                     {/* Home Indicator */}
-                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-[120px] h-[4px] bg-slate-900/20 rounded-full z-50"></div>
+                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-[120px] h-[4px] bg-black/20 rounded-full z-50 cursor-pointer hover:bg-black/40 transition-colors" onClick={() => setActiveApp('home')}></div>
                 </div>
              </div>
           </div>

@@ -5,7 +5,8 @@ import {
   CreditCard, Truck, Upload, Settings, Search,
   Menu, X, Plus, Minus, Trash2, ArrowLeft,
   Clock, AlertTriangle, DollarSign, User, Sparkles,
-  FileText, Download, CheckCircle, UploadCloud, ChevronDown, MoreHorizontal, Shield
+  FileText, Download, CheckCircle, UploadCloud, ChevronDown, MoreHorizontal, Shield,
+  MessageCircle, Image as ImageIcon, Send, Bot
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -55,7 +56,7 @@ const IMPORT_HISTORY = [
   { id: 2, filename: 'new_stock_jan.xlsx', date: '01 Jan 2024, 09:30 AM', records: 120, status: 'Success' },
 ];
 
-type Tab = 'dashboard' | 'pos' | 'inventory' | 'orders' | 'purchases' | 'suppliers' | 'import' | 'settings' | 'documents';
+type Tab = 'dashboard' | 'pos' | 'inventory' | 'orders' | 'whatsapp' | 'purchases' | 'suppliers' | 'import' | 'settings' | 'documents';
 
 const SalesChart = () => {
   const max = Math.max(...SALES_DATA.map(d => d.value));
@@ -171,6 +172,15 @@ const ShopOwnerDemo: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [paymentMode, setPaymentMode] = useState<'Cash' | 'UPI' | 'Card'>('Cash');
   const [importProgress, setImportProgress] = useState(0);
+  
+  // WhatsApp State
+  const [chatMessages, setChatMessages] = useState<{id: number, sender: 'user'|'bot', text?: string, image?: string}[]>([
+    { id: 1, sender: 'bot', text: 'Hello! Welcome to Pharmelo. Please upload your prescription or type the medicines you need.' }
+  ]);
+  const [chatInput, setChatInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [aiAnalysis, setAiAnalysis] = useState<any>(null);
+
   const navigate = useNavigate();
 
   // Dashboard Stats
@@ -226,6 +236,61 @@ const ShopOwnerDemo: React.FC = () => {
     }, 200);
   };
 
+  const handleSendWhatsApp = (text?: string, image?: string) => {
+    if (!text && !image) return;
+    
+    const newUserMsg = { id: Date.now(), sender: 'user' as const, text, image };
+    setChatMessages(prev => [...prev, newUserMsg]);
+    setChatInput('');
+    setIsTyping(true);
+    setAiAnalysis(null);
+
+    setTimeout(() => {
+      setIsTyping(false);
+      
+      if (image) {
+         setAiAnalysis({
+            medicines: [
+               { name: 'Dolo 650mg', qty: 10, available: true },
+               { name: 'Azithromycin 500', qty: 5, available: false }
+            ],
+            confidence: '98%',
+            patient: 'Rahul Sharma'
+         });
+         setChatMessages(prev => [...prev, { 
+            id: Date.now(), 
+            sender: 'bot', 
+            text: 'I have read your prescription. I found Dolo 650mg (Available) and Azithromycin 500 (Out of stock). Shall I place the order for Dolo 650mg?' 
+         }]);
+      } else {
+         setChatMessages(prev => [...prev, { 
+            id: Date.now(), 
+            sender: 'bot', 
+            text: 'I have received your request. Our pharmacist will review it shortly.' 
+         }]);
+      }
+    }, 2000);
+  };
+
+  const handleCreateOrderFromWhatsApp = () => {
+     const newOrder = {
+        id: `#${Math.floor(Math.random() * 10000)}`,
+        customer: aiAnalysis?.patient || 'WhatsApp User',
+        items: aiAnalysis?.medicines.filter((m:any) => m.available).map((m:any) => `${m.name} x${m.qty}`) || ['Custom Item'],
+        total: 150,
+        status: 'Pending',
+        time: 'Just now'
+     };
+     setOrders(prev => [newOrder, ...prev]);
+     alert('Order created successfully and added to App Orders!');
+     setAiAnalysis(null);
+     setChatMessages(prev => [...prev, { 
+        id: Date.now(), 
+        sender: 'bot', 
+        text: 'Your order has been placed successfully! Order ID: ' + newOrder.id 
+     }]);
+  };
+
   // --- RENDERERS ---
 
   const SidebarItem = ({ id, icon: Icon, label }: { id: Tab, icon: any, label: string }) => (
@@ -267,6 +332,7 @@ const ShopOwnerDemo: React.FC = () => {
           <SidebarItem id="pos" icon={CreditCard} label="POS & Billing" />
           <SidebarItem id="inventory" icon={Package} label="Inventory" />
           <SidebarItem id="orders" icon={Smartphone} label="App Orders" />
+          <SidebarItem id="whatsapp" icon={MessageCircle} label="WhatsApp Orders" />
           
           <div className="my-4 border-t border-slate-100 pt-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Management</div>
           
