@@ -37,8 +37,8 @@ const Hero: React.FC = () => {
 
         {/* Heading */}
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 mb-6">
-          Reimagining Medicine <br className="hidden md:block" />
-          <span className="text-blue-600">Ordering & Healthcare</span>
+          Medicine Delivery <br className="hidden md:block" />
+          <span className="text-blue-600">& Healthcare in Solan</span>
         </h1>
 
         <p className="mt-4 text-lg text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed">
