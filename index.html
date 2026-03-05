@@ -79,6 +79,35 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- STRUCTURED DATA (JSON-LD) for Search Engines -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MedicalOrganization",
+      "name": "Pharmelo",
+      "alternateName": "Pharmelo Technologies",
+      "url": "https://pharmelo.in",
+      "logo": "https://pharmelo.in/logo.png",
+      "description": "Instant medicine delivery and doctor booking platform in Solan, Himachal Pradesh.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Solan",
+        "addressRegion": "Himachal Pradesh",
+        "addressCountry": "IN"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "pharmeloshop@gmail.com",
+        "contactType": "customer support"
+      },
+      "sameAs": [
+        "https://twitter.com/pharmelo",
+        "https://instagram.com/pharmelo"
+      ]
+    }
+    </script>
 </head>
   <body>
     <div id="root"></div>
