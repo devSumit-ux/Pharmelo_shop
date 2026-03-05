@@ -30,6 +30,14 @@ const WaitlistModal: React.FC<WaitlistModalProps> = ({ isOpen, onClose, type }) 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMessage('Please enter a valid email address.');
+      setStatus('error');
+      return;
+    }
     
     setStatus('submitting');
     setErrorMessage('');
