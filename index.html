@@ -3,6 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- SEO Meta Tags -->
+    <title>Pharmelo | Instant Medicine Delivery & Doctor Booking in Solan</title>
+    <meta name="description" content="Pharmelo connects you with local pharmacies and doctors in Solan. Order medicines online for 15-min pickup, book appointments, and manage health records.">
+    <meta name="keywords" content="pharmacy app, medicine delivery, doctor booking, health records, solan, himachal pradesh, online chemist, prescription upload">
+    <meta name="author" content="Pharmelo Technologies">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://pharmelo.in" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://pharmelo.in/" />
+    <meta property="og:title" content="Pharmelo | Instant Medicine Delivery & Doctor Booking" />
+    <meta property="og:description" content="Skip the pharmacy queue. Order medicines from local chemists in Solan and book doctor appointments instantly." />
+    <meta property="og:image" content="https://pharmelo.in/og-image.jpg" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://pharmelo.in/" />
+    <meta property="twitter:title" content="Pharmelo | Instant Medicine Delivery & Doctor Booking" />
+    <meta property="twitter:description" content="Skip the pharmacy queue. Order medicines from local chemists in Solan and book doctor appointments instantly." />
+    <meta property="twitter:image" content="https://pharmelo.in/og-image.jpg" />
     
     <!-- ERROR TRAP & POLYFILLS (Must be first) -->
     <script>
@@ -23,6 +48,11 @@
           if (errorBox) {
             errorBox.style.display = 'flex';
             document.getElementById('error-msg').textContent = "App crashed: " + msg;
+            
+            // Specific hint for Brave/Ad-blockers
+            if (msg && (msg.includes('chunk') || msg.includes('load') || msg.includes('script'))) {
+               document.getElementById('brave-hint').style.display = 'block';
+            }
           }
         }
       }
@@ -34,14 +64,19 @@
             showFatalError(msg);
         }
       };
+
+      // Catch unhandled promise rejections (common with dynamic imports)
+      window.onunhandledrejection = function(event) {
+        console.error("Unhandled Rejection:", event.reason);
+        if (document.getElementById('root').childElementCount === 0) {
+            showFatalError(event.reason);
+        }
+      };
     </script>
 
     <!-- RESOURCE HINTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
-    <title>Pharmelo (formerly Medzo) | Solan Pharmacy App</title>
-    <meta name="description" content="Pharmelo is Himachal's #1 pharmacy pickup app. Connect with local chemists in Solan for instant medicine availability.">
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -53,10 +88,24 @@
         <div style="background: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 400px;">
             <h2 style="color: #0f172a; margin: 0 0 10px;">Unable to Load</h2>
             <p style="color: #64748b; font-size: 14px; line-height: 1.5;">Please disable your ad blocker or shield if the app doesn't load.</p>
+            <p id="brave-hint" style="display: none; color: #d97706; font-size: 13px; margin-top: 10px; background: #fef3c7; padding: 8px; border-radius: 6px;">
+               <strong>Brave Browser Users:</strong> Please turn off "Shields" for this site. Some essential scripts are being blocked.
+            </p>
             <p id="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 20px; font-family: monospace; background: #fee2e2; padding: 10px; border-radius: 8px; overflow: hidden; text-overflow: ellipsis; white-space: pre-wrap; text-align: left;"></p>
             <button onclick="window.location.reload()" style="margin-top: 20px; background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">Reload</button>
         </div>
     </div>
+
+    <noscript>
+      <div style="height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; background: #f8fafc; font-family: sans-serif; text-align: center; padding: 20px;">
+        <div style="background: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 400px;">
+          <h2 style="color: #0f172a; margin: 0 0 10px;">JavaScript Required</h2>
+          <p style="color: #64748b; font-size: 14px; line-height: 1.5;">
+            Pharmelo requires JavaScript to run. Please enable JavaScript in your browser settings to continue.
+          </p>
+        </div>
+      </div>
+    </noscript>
 
     <script type="module" src="./index.tsx"></script>
   </body>

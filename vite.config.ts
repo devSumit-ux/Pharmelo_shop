@@ -8,4 +8,9 @@ export default defineConfig({
     port: 3000,
     host: '0.0.0.0',
   },
+  build: {
+    target: 'es2015', // Support older browsers
+    sourcemap: true,  // Enable source maps for debugging
+    outDir: 'dist',
+  },
 });
