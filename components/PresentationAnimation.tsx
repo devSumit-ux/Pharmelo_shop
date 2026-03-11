@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GoogleGenAI } from '@google/genai';
-import { get, set } from 'idb-keyval';
+import { getStoredAudio, storeAudio } from '../services/audioService';
 import { 
   MessageSquare, 
   Camera, 
@@ -112,8 +112,7 @@ const PresentationAnimation: React.FC<PresentationAnimationProps> = ({ onComplet
       const cacheKey = `pharmelo_audio_step_${step}`;
       
       try {
-        const cachedBase64 = await get(cacheKey);
-        let base64Audio = cachedBase64;
+        let base64Audio = await getStoredAudio(cacheKey);
 
         if (!base64Audio) {
           const apiKey = import.meta.env.VITE_GEMINI_API_KEY || (typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : undefined);
@@ -135,10 +134,10 @@ const PresentationAnimation: React.FC<PresentationAnimationProps> = ({ onComplet
             },
           });
 
-          base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+          base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data || null;
           
           if (base64Audio) {
-            await set(cacheKey, base64Audio);
+            await storeAudio(cacheKey, base64Audio);
           }
         }
 

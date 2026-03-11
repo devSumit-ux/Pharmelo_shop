@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { GoogleGenAI } from '@google/genai';
-import { get, set } from 'idb-keyval';
+import { getStoredAudio, storeAudio } from '../services/audioService';
 
 // Helper to wrap raw 16-bit PCM data in a WAV file format
 function createWavBlob(pcmData: Uint8Array, sampleRate: number = 24000): Blob {
@@ -76,9 +76,8 @@ const PresentationAudioPlayer: React.FC<PresentationAudioPlayerProps> = ({ slide
       const cacheKey = `pharmelo_audio_slide_hinglish_${slideId}`;
       
       try {
-        // 1. Check IndexedDB for cached audio
-        const cachedBase64 = await get(cacheKey);
-        let base64Audio = cachedBase64;
+        // 1. Check for cached audio (IndexedDB + Supabase)
+        let base64Audio = await getStoredAudio(cacheKey);
 
         // 2. If not cached, generate it
         if (!base64Audio) {
@@ -101,11 +100,11 @@ const PresentationAudioPlayer: React.FC<PresentationAudioPlayerProps> = ({ slide
             },
           });
 
-          base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+          base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data || null;
           
           if (base64Audio) {
-            // Save to IndexedDB for future use
-            await set(cacheKey, base64Audio);
+            // Save to backend and local cache
+            await storeAudio(cacheKey, base64Audio);
           }
         }
 

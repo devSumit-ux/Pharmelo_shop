@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { GoogleGenAI } from '@google/genai';
-import { get, set } from 'idb-keyval';
+import { getStoredAudio, storeAudio } from '../services/audioService';
 import { Play, Pause, Volume2, VolumeX, Sparkles } from 'lucide-react';
 
 // Helper to wrap raw 16-bit PCM data in a WAV file format
@@ -70,9 +70,8 @@ const GlobalAudioPlayer: React.FC = () => {
       const cacheKey = `pharmelo_audio_${location.pathname}`;
       
       try {
-        // 1. Check IndexedDB for cached audio
-        const cachedBase64 = await get(cacheKey);
-        let base64Audio = cachedBase64;
+        // 1. Check for cached audio (IndexedDB + Supabase)
+        let base64Audio = await getStoredAudio(cacheKey);
 
         // 2. If not cached, generate it
         if (!base64Audio) {
@@ -96,11 +95,11 @@ const GlobalAudioPlayer: React.FC = () => {
             },
           });
 
-          base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+          base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data || null;
           
           if (base64Audio) {
-            // Save to IndexedDB for future use
-            await set(cacheKey, base64Audio);
+            // Save to backend and local cache
+            await storeAudio(cacheKey, base64Audio);
           }
         }
 
