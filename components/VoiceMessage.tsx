@@ -43,7 +43,13 @@ const VoiceMessage: React.FC = () => {
     const generateAudio = async () => {
       setIsLoading(true);
       try {
-        const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY });
+        const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+        if (!apiKey) {
+          console.error("VITE_GEMINI_API_KEY is missing");
+          setIsLoading(false);
+          return;
+        }
+        const ai = new GoogleGenAI({ apiKey });
         const prompt = "Hey guys! Welcome to Pharmelo. Yaar, aaj kal medicine order karna aur un handwritten prescriptions ko samajhna kitna stressful hai na? Isiliye humne banaya hai Pharmelo. Yeh dekho hamara dual-phone ecosystem kaise kaam karta hai. Step one, aap bas WhatsApp par apne prescription ki photo bhejo. Step two, hamara smart AI usko read karke medicines aur doctor details nikal lega. Step three, aapka order turant Consumer App mein sync ho jayega. Step four, local pharmacy partner ko unke app par order mil jayega. Step five, wo order accept karke prepare karna shuru kar denge. Aur finally, step six, aapko WhatsApp par confirmation mil jayegi. Hai na super chill? No new apps needed, just simple, smart healthcare!";
         
         const response = await ai.models.generateContent({
