@@ -61,18 +61,47 @@ const stepPrompts: Record<number, string> = {
 
 const PRESCRIPTION_IMG = "https://www.tribuneindia.com/sortd-service/imaginary/v22-01/jpg/large/high?url=dGhldHJpYnVuZS1zb3J0ZC1wcm8tcHJvZC1zb3J0ZC9tZWRpYTc0ZGMyNDcwLTRlNzEtMTFlZi04MGUwLTg5MTBmNjk1YjZkZS5qcGc=";
 
-const PresentationAnimation: React.FC = () => {
+interface PresentationAnimationProps {
+  onComplete?: () => void;
+  onProgress?: (progress: number) => void;
+}
+
+const PresentationAnimation: React.FC<PresentationAnimationProps> = ({ onComplete, onProgress }) => {
   const [step, setStep] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentAudioUrl, setCurrentAudioUrl] = useState<string | null>(null);
+  const [audioError, setAudioError] = useState(false);
 
-  // Animation sequence
+  // Update progress whenever step changes
   useEffect(() => {
-    const timer = setInterval(() => {
-      setStep((prev) => (prev + 1) % 7);
-    }, 6000); // 6 seconds per step to allow audio to finish
-    return () => clearInterval(timer);
-  }, []);
+    if (onProgress) {
+      onProgress(((step + 1) / 7) * 100);
+    }
+  }, [step, onProgress]);
+
+  // Function to move to next step
+  const nextStep = () => {
+    if (step < 6) {
+      setStep((prev) => prev + 1);
+    } else if (onComplete) {
+      onComplete();
+    }
+  };
+
+  // Animation sequence fallback timer
+  useEffect(() => {
+    // If audio fails or is blocked, move after 8 seconds anyway
+    const timer = setTimeout(() => {
+      nextStep();
+    }, 8000); 
+    
+    return () => clearTimeout(timer);
+  }, [step]);
+
+  // Handle audio ended to move to next step immediately
+  const handleAudioEnded = () => {
+    nextStep();
+  };
 
   // Audio generation and playback
   useEffect(() => {
@@ -129,9 +158,11 @@ const PresentationAnimation: React.FC = () => {
           }
           
           setCurrentAudioUrl(url);
+          setAudioError(false);
         }
       } catch (error) {
         console.error("Failed to load/generate audio for step:", error);
+        setAudioError(true);
       }
     };
 
@@ -156,7 +187,14 @@ const PresentationAnimation: React.FC = () => {
     <div className="w-full max-w-7xl mx-auto p-4 md:p-8 bg-slate-900 rounded-[3rem] shadow-2xl overflow-hidden relative border-8 border-slate-800">
       {/* Hidden Audio Player */}
       {currentAudioUrl && (
-        <audio ref={audioRef} src={currentAudioUrl} className="hidden" autoPlay />
+        <audio 
+          ref={audioRef} 
+          src={currentAudioUrl} 
+          className="hidden" 
+          autoPlay 
+          onEnded={handleAudioEnded}
+          onError={() => setAudioError(true)}
+        />
       )}
 
       {/* Background Glow */}

@@ -50,6 +50,20 @@ interface PresentationAudioPlayerProps {
 const PresentationAudioPlayer: React.FC<PresentationAudioPlayerProps> = ({ slideId, onEnded, onProgress }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentAudioUrl, setCurrentAudioUrl] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    // Fallback timer: if audio doesn't finish in 30 seconds, move anyway
+    // (Adjust time as needed based on prompt lengths)
+    const fallbackTimer = setTimeout(() => {
+      if (!isPlaying) {
+        console.warn(`Audio fallback triggered for slide: ${slideId}`);
+        onEnded();
+      }
+    }, 30000); 
+
+    return () => clearTimeout(fallbackTimer);
+  }, [slideId, isPlaying, onEnded]);
 
   useEffect(() => {
     const loadAudioForSlide = async () => {
@@ -132,9 +146,12 @@ const PresentationAudioPlayer: React.FC<PresentationAudioPlayerProps> = ({ slide
   useEffect(() => {
     if (currentAudioUrl && audioRef.current) {
       // Attempt to autoplay. This is hidden in the background.
-      audioRef.current.play().catch(() => {
-        // Silently handle autoplay rejection to prevent console warnings
-      });
+      audioRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch(() => {
+          // Silently handle autoplay rejection to prevent console warnings
+          setIsPlaying(false);
+        });
     }
   }, [currentAudioUrl]);
 

@@ -111,21 +111,10 @@ const PresentationPage: React.FC = () => {
 
   useEffect(() => {
     if (slide.id === 'demo') {
-      const duration = 42000; // 42 seconds (7 steps * 6 seconds)
-      const interval = 100;
-      let elapsed = 0;
-      
-      const timer = setInterval(() => {
-        elapsed += interval;
-        setProgress((elapsed / duration) * 100);
-        
-        if (elapsed >= duration) {
-          clearInterval(timer);
-          handleAudioEnded();
-        }
-      }, interval);
-      
-      return () => clearInterval(timer);
+      // Progress for demo slide is handled by the step count (0-6)
+      // We don't need a separate timer here anymore as PresentationAnimation 
+      // will call onComplete when finished.
+      return;
     }
   }, [slide.id]);
 
@@ -242,7 +231,7 @@ const PresentationPage: React.FC = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 1 }}
             >
-              <PresentationAnimation />
+              <PresentationAnimation onComplete={handleAudioEnded} onProgress={handleAudioProgress} />
             </motion.div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
