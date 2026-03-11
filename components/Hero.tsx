@@ -70,7 +70,7 @@ const Hero: React.FC = () => {
         {/* Badge */}
         <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-50 border border-slate-200 mb-8 hover:border-blue-200 transition-colors cursor-default">
           <Calendar className="h-4 w-4 text-blue-600" />
-          <span className="text-xs font-bold text-slate-600 uppercase tracking-wide">Launching in Solan: March End</span>
+          <span className="text-xs font-bold text-slate-600 uppercase tracking-wide">Launching in Solan: April End</span>
         </motion.div>
 
         {/* Heading */}

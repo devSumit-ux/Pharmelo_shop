@@ -1,6 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { GoogleGenAI } from '@google/genai';
+import { get, set } from 'idb-keyval';
 import { 
   MessageSquare, 
   Camera, 
@@ -16,21 +18,142 @@ import {
   Calendar
 } from 'lucide-react';
 
+// Helper to wrap raw 16-bit PCM data in a WAV file format
+function createWavBlob(pcmData: Uint8Array, sampleRate: number = 24000): Blob {
+  const buffer = new ArrayBuffer(44 + pcmData.length);
+  const view = new DataView(buffer);
+
+  const writeString = (view: DataView, offset: number, string: string) => {
+    for (let i = 0; i < string.length; i++) {
+      view.setUint8(offset + i, string.charCodeAt(i));
+    }
+  };
+
+  writeString(view, 0, 'RIFF');
+  view.setUint32(4, 36 + pcmData.length, true);
+  writeString(view, 8, 'WAVE');
+  writeString(view, 12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true); // PCM format
+  view.setUint16(22, 1, true); // 1 channel
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true); // byte rate
+  view.setUint16(32, 2, true); // block align
+  view.setUint16(34, 16, true); // bits per sample
+  writeString(view, 36, 'data');
+  view.setUint32(40, pcmData.length, true);
+
+  // Copy PCM data
+  new Uint8Array(buffer, 44).set(pcmData);
+
+  return new Blob([buffer], { type: 'audio/wav' });
+}
+
+const stepPrompts: Record<number, string> = {
+  0: "Ready to order? Dekhiye Pharmelo kaise users, doctors, aur local shops ko connect karta hai.",
+  1: "User apna prescription WhatsApp par bhejta hai. Koi naya app download karne ki zaroorat nahi.",
+  2: "Pharmelo AI prescription ko read karta hai aur doctor booking suggest karta hai.",
+  3: "Order turant Consumer App mein sync ho jata hai, jahan saare health records securely store hote hain.",
+  4: "Order Partner Pharmacy App mein dikhayi deta hai. Real-time notifications se koi delay nahi hota.",
+  5: "Pharmacist order accept karta hai aur medicines prepare karna shuru karta hai.",
+  6: "User ko confirmation message mil jata hai. Ek seamless aur fast experience sabke liye."
+};
+
 const PRESCRIPTION_IMG = "https://www.tribuneindia.com/sortd-service/imaginary/v22-01/jpg/large/high?url=dGhldHJpYnVuZS1zb3J0ZC1wcm8tcHJvZC1zb3J0ZC9tZWRpYTc0ZGMyNDcwLTRlNzEtMTFlZi04MGUwLTg5MTBmNjk1YjZkZS5qcGc=";
 
 const PresentationAnimation: React.FC = () => {
   const [step, setStep] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [currentAudioUrl, setCurrentAudioUrl] = useState<string | null>(null);
 
   // Animation sequence
   useEffect(() => {
     const timer = setInterval(() => {
       setStep((prev) => (prev + 1) % 7);
-    }, 4500); // 4.5 seconds per step
+    }, 6000); // 6 seconds per step to allow audio to finish
     return () => clearInterval(timer);
   }, []);
 
+  // Audio generation and playback
+  useEffect(() => {
+    const loadAudioForStep = async () => {
+      const prompt = stepPrompts[step];
+      if (!prompt) return;
+
+      const cacheKey = `pharmelo_audio_step_${step}`;
+      
+      try {
+        const cachedBase64 = await get(cacheKey);
+        let base64Audio = cachedBase64;
+
+        if (!base64Audio) {
+          const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY });
+          const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash-preview-tts",
+            contents: [{ parts: [{ text: prompt }] }],
+            config: {
+              responseModalities: ["AUDIO"],
+              speechConfig: {
+                  voiceConfig: {
+                    prebuiltVoiceConfig: { voiceName: 'Kore' },
+                  },
+              },
+            },
+          });
+
+          base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+          
+          if (base64Audio) {
+            await set(cacheKey, base64Audio);
+          }
+        }
+
+        if (base64Audio) {
+          const binaryString = window.atob(base64Audio);
+          const len = binaryString.length;
+          const bytes = new Uint8Array(len);
+          for (let i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          
+          const wavBlob = createWavBlob(bytes, 24000);
+          const url = URL.createObjectURL(wavBlob);
+          
+          if (currentAudioUrl) {
+            URL.revokeObjectURL(currentAudioUrl);
+          }
+          
+          setCurrentAudioUrl(url);
+        }
+      } catch (error) {
+        console.error("Failed to load/generate audio for step:", error);
+      }
+    };
+
+    loadAudioForStep();
+    
+    return () => {
+      if (currentAudioUrl) {
+        URL.revokeObjectURL(currentAudioUrl);
+      }
+    };
+  }, [step]);
+
+  useEffect(() => {
+    if (currentAudioUrl && audioRef.current) {
+      audioRef.current.play().catch(() => {
+        // Silently handle autoplay rejection
+      });
+    }
+  }, [currentAudioUrl]);
+
   return (
     <div className="w-full max-w-7xl mx-auto p-4 md:p-8 bg-slate-900 rounded-[3rem] shadow-2xl overflow-hidden relative border-8 border-slate-800">
+      {/* Hidden Audio Player */}
+      {currentAudioUrl && (
+        <audio ref={audioRef} src={currentAudioUrl} className="hidden" />
+      )}
+
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-gradient-to-tr from-blue-600/20 via-transparent to-indigo-600/20 blur-[100px] pointer-events-none" />
 

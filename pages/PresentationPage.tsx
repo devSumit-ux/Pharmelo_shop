@@ -88,7 +88,7 @@ const slides = [
       "Participate in our survey to validate these features.",
       "Give us honest feedback on the proposed ecosystem.",
       "Spread the word to local doctors and pharmacists.",
-      "Join our priority waitlist for the March launch."
+      "Join our priority waitlist for the April launch."
     ],
     bgColor: "bg-orange-50"
   }
@@ -108,6 +108,26 @@ const PresentationPage: React.FC = () => {
   const handleAudioProgress = (p: number) => {
     setProgress(p);
   };
+
+  useEffect(() => {
+    if (slide.id === 'demo') {
+      const duration = 42000; // 42 seconds (7 steps * 6 seconds)
+      const interval = 100;
+      let elapsed = 0;
+      
+      const timer = setInterval(() => {
+        elapsed += interval;
+        setProgress((elapsed / duration) * 100);
+        
+        if (elapsed >= duration) {
+          clearInterval(timer);
+          handleAudioEnded();
+        }
+      }, interval);
+      
+      return () => clearInterval(timer);
+    }
+  }, [slide.id]);
 
   return (
     <div className={`min-h-screen flex flex-col items-center justify-center p-6 transition-colors duration-1000 ${slide.bgColor}`}>
