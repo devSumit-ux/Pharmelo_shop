@@ -150,6 +150,33 @@ const PresentationPage: React.FC = () => {
         />
       </div>
 
+      {/* Manual Navigation Controls */}
+      <div className="fixed inset-y-0 left-4 flex items-center z-40">
+        <button
+          onClick={() => {
+            setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+            setProgress(0);
+          }}
+          className="p-4 bg-white/50 backdrop-blur-sm rounded-full text-slate-600 hover:bg-white hover:text-blue-600 transition-all shadow-lg border border-slate-100 group"
+          aria-label="Previous Slide"
+        >
+          <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+        </button>
+      </div>
+
+      <div className="fixed inset-y-0 right-4 flex items-center z-40">
+        <button
+          onClick={() => {
+            setCurrentSlide((prev) => (prev + 1) % slides.length);
+            setProgress(0);
+          }}
+          className="p-4 bg-white/50 backdrop-blur-sm rounded-full text-slate-600 hover:bg-white hover:text-blue-600 transition-all shadow-lg border border-slate-100 group"
+          aria-label="Next Slide"
+        >
+          <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+        </button>
+      </div>
+
       {/* Navigation Dots */}
       <div className="fixed bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-50">
         {slides.map((_, idx) => (

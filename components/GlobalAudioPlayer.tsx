@@ -76,9 +76,9 @@ const GlobalAudioPlayer: React.FC = () => {
 
         // 2. If not cached, generate it
         if (!base64Audio) {
-          const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+          const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
           if (!apiKey) {
-            console.error("VITE_GEMINI_API_KEY is missing");
+            console.error("GEMINI_API_KEY is missing");
             setIsLoading(false);
             return;
           }

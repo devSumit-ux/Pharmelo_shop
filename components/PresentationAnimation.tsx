@@ -87,9 +87,9 @@ const PresentationAnimation: React.FC = () => {
         let base64Audio = cachedBase64;
 
         if (!base64Audio) {
-          const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+          const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
           if (!apiKey) {
-            console.error("VITE_GEMINI_API_KEY is missing");
+            console.error("GEMINI_API_KEY is missing");
             return;
           }
           const ai = new GoogleGenAI({ apiKey });
@@ -156,7 +156,7 @@ const PresentationAnimation: React.FC = () => {
     <div className="w-full max-w-7xl mx-auto p-4 md:p-8 bg-slate-900 rounded-[3rem] shadow-2xl overflow-hidden relative border-8 border-slate-800">
       {/* Hidden Audio Player */}
       {currentAudioUrl && (
-        <audio ref={audioRef} src={currentAudioUrl} className="hidden" />
+        <audio ref={audioRef} src={currentAudioUrl} className="hidden" autoPlay />
       )}
 
       {/* Background Glow */}
@@ -455,11 +455,28 @@ const PresentationAnimation: React.FC = () => {
                     
                     {step >= 5 ? (
                       <motion.div 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="w-full mt-2 bg-green-100 text-green-700 text-[10px] font-bold py-2 rounded-lg text-center flex items-center justify-center gap-1"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ 
+                          opacity: 1, 
+                          scale: [1, 1.02, 1],
+                          backgroundColor: ["#dcfce7", "#bbf7d0", "#dcfce7"]
+                        }}
+                        transition={{ 
+                          opacity: { duration: 0.3 },
+                          scale: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+                          backgroundColor: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                        }}
+                        className="w-full mt-2 bg-green-100 text-green-700 text-[10px] font-bold py-2 rounded-lg text-center flex items-center justify-center gap-1 shadow-sm border border-green-200"
                       >
-                        <CheckCheck size={14} /> Accepted & Preparing
+                        <div className="relative">
+                          <CheckCheck size={14} />
+                          <motion.div 
+                            animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+                            transition={{ duration: 1.5, repeat: Infinity }}
+                            className="absolute inset-0 bg-green-400 rounded-full -z-10"
+                          />
+                        </div>
+                        Accepted & Preparing...
                       </motion.div>
                     ) : (
                       <motion.button 

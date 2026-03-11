@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { CheckCircle2, ArrowRight, ArrowLeft, ClipboardList, User, Stethoscope, Store } from 'lucide-react';
 
 type SurveyType = 'patient' | 'pharmacist' | 'doctor' | null;
 
 const SurveyPage: React.FC = () => {
+  const navigate = useNavigate();
   const [surveyType, setSurveyType] = useState<SurveyType>(null);
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
@@ -66,7 +68,7 @@ const SurveyPage: React.FC = () => {
           <h2 className="text-3xl font-bold text-slate-900 mb-4">Survey Completed!</h2>
           <p className="text-slate-500 mb-8">Your feedback is invaluable and will help us build a better Pharmelo. We respect your privacy and all data is anonymous.</p>
           <button 
-            onClick={() => { setSurveyType(null); setStep(0); setIsSubmitted(false); setAnswers({}); }}
+            onClick={() => { navigate('/'); }}
             className="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-blue-600 transition-all shadow-lg"
           >
             Back to Home
