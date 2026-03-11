@@ -25,6 +25,7 @@ const Careers = lazy(() => import('./pages/Careers'));
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const SurveyPage = lazy(() => import('./pages/SurveyPage'));
+const PresentationPage = lazy(() => import('./pages/PresentationPage'));
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -45,8 +46,8 @@ const PageWrapper = ({ children, title, desc, keywords }: React.PropsWithChildre
 const AppContent = () => {
   const location = useLocation();
 
-  // Hide Navbar/Footer/CTA on Admin routes AND Shop Demo route
-  const isFullScreenRoute = location.pathname.startsWith('/admin') || location.pathname === '/shop-demo';
+  // Hide Navbar/Footer/CTA on Admin routes AND Shop Demo route AND Presentation route
+  const isFullScreenRoute = location.pathname.startsWith('/admin') || location.pathname === '/shop-demo' || location.pathname === '/presentation';
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-blue-100 selection:text-blue-900 flex flex-col font-sans animate-fade-in">
@@ -77,6 +78,7 @@ const AppContent = () => {
             <Route path="/admin" element={<PageWrapper title="Admin Login | Pharmelo" desc="Restricted access."><AdminLogin /></PageWrapper>} />
             <Route path="/admin/dashboard" element={<PageWrapper title="Admin Dashboard | Pharmelo" desc="Restricted access."><AdminDashboard /></PageWrapper>} />
             <Route path="/survey" element={<PageWrapper title="Participate in Survey | Pharmelo" desc="Help us validate the Pharmelo concept. Share your feedback as a patient, doctor, or pharmacist."><SurveyPage /></PageWrapper>} />
+            <Route path="/presentation" element={<PageWrapper title="Pharmelo Presentation | Solan Launch" desc="Learn about our vision for healthcare in Solan."><PresentationPage /></PageWrapper>} />
             
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

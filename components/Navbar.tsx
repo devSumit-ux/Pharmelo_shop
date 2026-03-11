@@ -10,6 +10,7 @@ const navItems = [
   { label: 'About', href: '/about' },
   { label: 'Roadmap', href: '/roadmap' },
   { label: 'Community', href: '/feedback' },
+  { label: 'Presentation', href: '/presentation' },
 ];
 
 const Navbar: React.FC = () => {

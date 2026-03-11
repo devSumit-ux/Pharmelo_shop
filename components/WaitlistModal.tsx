@@ -127,7 +127,7 @@ const WaitlistModal: React.FC<WaitlistModalProps> = ({ isOpen, onClose, type }) 
             <p className="text-slate-500 mb-8 leading-relaxed text-sm">
               {isCommunity 
                 ? "Get exclusive weekly health tips, community stories, and early access to features every Saturday." 
-                : "Medzo is rolling out in phases. Enter your email to get notified when we launch in your area."}
+                : "We are rolling out in phases. Enter your email to get notified when we launch in your area."}
             </p>
 
             {status === 'error' && (

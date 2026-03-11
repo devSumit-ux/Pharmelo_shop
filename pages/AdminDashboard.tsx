@@ -442,8 +442,8 @@ const AdminDashboard: React.FC = () => {
       <aside className="w-72 bg-[#0f172a] fixed h-full overflow-y-auto z-30 border-r border-slate-800 flex flex-col">
         <div className="p-8">
           <div className="flex items-center gap-3 mb-1">
-             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-500/30">M</div>
-             <h1 className="text-xl font-bold text-white tracking-tight">Medzo Admin</h1>
+             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-500/30">A</div>
+             <h1 className="text-xl font-bold text-white tracking-tight">Admin</h1>
           </div>
           <p className="text-xs text-slate-500 ml-11">Version 1.0.4</p>
         </div>
