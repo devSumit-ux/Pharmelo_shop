@@ -381,16 +381,30 @@ const PresentationAnimation: React.FC = () => {
       </div>
 
       {/* Step Description */}
-      <div className="mt-12 text-center">
+      <div className="mt-12 text-center h-32 flex flex-col items-center justify-center">
         <AnimatePresence mode="wait">
           <motion.div
             key={step}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="space-y-2"
+            initial={{ opacity: 0, y: 15, scale: 0.95, filter: "brightness(1.5)" }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: "brightness(1)" }}
+            exit={{ opacity: 0, y: -15, scale: 0.95 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="space-y-2 bg-slate-800/60 px-8 py-5 rounded-3xl border border-slate-700/50 relative overflow-hidden shadow-xl max-w-3xl w-full"
           >
-            <h3 className="text-xl md:text-2xl font-black text-white italic">
+            {/* Highlight Sweep Animation */}
+            <motion.div 
+              initial={{ left: "-100%" }}
+              animate={{ left: "200%" }}
+              transition={{ duration: 1.5, ease: "easeInOut", delay: 0.1 }}
+              className="absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent via-blue-400/20 to-transparent skew-x-12 z-0 pointer-events-none"
+            />
+            
+            <motion.h3 
+              initial={{ color: "#60A5FA" }}
+              animate={{ color: "#FFFFFF" }}
+              transition={{ duration: 1, delay: 0.2 }}
+              className="text-xl md:text-2xl font-black italic relative z-10"
+            >
               {step === 0 && "Ready to order?"}
               {step === 1 && "User sends prescription via WhatsApp"}
               {step === 2 && "Pharmelo AI reads prescription & suggests doctor booking"}
@@ -398,8 +412,8 @@ const PresentationAnimation: React.FC = () => {
               {step === 4 && "Order appears in Partner Pharmacy App"}
               {step === 5 && "Pharmacist accepts & starts preparing"}
               {step === 6 && "User gets a confirmation message"}
-            </h3>
-            <p className="text-slate-400 text-sm max-w-2xl mx-auto">
+            </motion.h3>
+            <p className="text-slate-400 text-sm max-w-2xl mx-auto relative z-10">
               {step === 0 && "See how Pharmelo bridges the gap between users, doctors, and local shops."}
               {step === 1 && "No new apps to download. Just use the WhatsApp you already love."}
               {step === 2 && "Our AI understands handwritten prescriptions and integrates doctor appointments."}

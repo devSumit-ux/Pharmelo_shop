@@ -7,6 +7,7 @@ import StickyCTA from './components/StickyCTA';
 import SplashScreen from './components/SplashScreen';
 import Seo from './components/Seo';
 import { AppProvider } from './context/AppContext';
+import GlobalAudioPlayer from './components/GlobalAudioPlayer';
 
 // Eager Load Critical Pages
 import Home from './pages/Home';
@@ -55,6 +56,7 @@ const AppContent = () => {
       {!isFullScreenRoute && <Navbar />}
       
       <main className="flex-grow">
+        <GlobalAudioPlayer />
         <Suspense fallback={
           <div className="min-h-screen flex items-center justify-center">
              <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
@@ -94,7 +96,7 @@ const AppContent = () => {
 function App() {
   return (
     <AppProvider>
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AppContent />
       </Router>
     </AppProvider>

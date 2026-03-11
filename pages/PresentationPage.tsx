@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PresentationAnimation from '../components/PresentationAnimation';
+import PresentationAudioPlayer from '../components/PresentationAudioPlayer';
 
 const slides = [
   {
@@ -98,23 +99,15 @@ const PresentationPage: React.FC = () => {
   const [progress, setProgress] = useState(0);
   
   const slide = slides[currentSlide];
-  const SLIDE_DURATION = 30000; // 30 seconds for all slides as requested
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-      setProgress(0);
-    }, SLIDE_DURATION);
+  const handleAudioEnded = () => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+    setProgress(0);
+  };
 
-    const progressTimer = setInterval(() => {
-      setProgress((prev) => Math.min(prev + (100 / (SLIDE_DURATION / 100)), 100));
-    }, 100);
-
-    return () => {
-      clearInterval(timer);
-      clearInterval(progressTimer);
-    };
-  }, [currentSlide, SLIDE_DURATION]);
+  const handleAudioProgress = (p: number) => {
+    setProgress(p);
+  };
 
   return (
     <div className={`min-h-screen flex flex-col items-center justify-center p-6 transition-colors duration-1000 ${slide.bgColor}`}>
@@ -248,10 +241,17 @@ const PresentationPage: React.FC = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
-        className="fixed bottom-4 right-6 text-slate-400 text-xs font-medium uppercase tracking-widest hidden md:block"
+        className="fixed bottom-4 left-6 text-slate-400 text-xs font-medium uppercase tracking-widest hidden md:block"
       >
         Pharmelo Presentation • Solan Launch 2026
       </motion.div>
+
+      {/* Invisible Slide Audio Player */}
+      <PresentationAudioPlayer 
+        slideId={slide.id} 
+        onEnded={handleAudioEnded}
+        onProgress={handleAudioProgress}
+      />
     </div>
   );
 };

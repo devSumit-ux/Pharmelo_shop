@@ -49,10 +49,10 @@ const StickyCTA: React.FC = () => {
           {/* Action Buttons */}
           <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
              <Link 
-               to="/roadmap" 
-               className="text-slate-500 hover:text-slate-900 font-bold text-sm transition-colors whitespace-nowrap"
+               to="/presentation" 
+               className="text-slate-500 hover:text-slate-900 font-bold text-sm transition-colors whitespace-nowrap flex items-center gap-1"
              >
-               Learn More
+               <Sparkles className="w-4 h-4" /> Presentation
              </Link>
              <button 
                onClick={() => setIsModalOpen(true)}

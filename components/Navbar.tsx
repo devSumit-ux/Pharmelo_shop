@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Pill, Menu, X, ChevronRight } from 'lucide-react';
+import { Pill, Menu, X, ChevronRight, Sparkles } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAppConfig } from '../context/AppContext';
 import WaitlistModal from './WaitlistModal';
@@ -10,7 +10,6 @@ const navItems = [
   { label: 'About', href: '/about' },
   { label: 'Roadmap', href: '/roadmap' },
   { label: 'Community', href: '/feedback' },
-  { label: 'Presentation', href: '/presentation' },
 ];
 
 const Navbar: React.FC = () => {
@@ -80,6 +79,9 @@ const Navbar: React.FC = () => {
                   {item.label}
                 </NavLink>
               ))}
+              <NavLink to="/presentation" className="text-sm font-bold text-indigo-600 hover:text-indigo-700 transition-colors flex items-center gap-1">
+                <Sparkles className="w-4 h-4" /> Presentation
+              </NavLink>
               <NavLink to="/wishlist" className="bg-slate-900 hover:bg-blue-600 text-white px-6 py-2.5 rounded-full font-bold transition-all text-sm shadow-xl shadow-slate-900/10 hover:shadow-blue-600/20 flex items-center gap-1 group">
                 Try Beta <ChevronRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
               </NavLink>
@@ -105,7 +107,7 @@ const Navbar: React.FC = () => {
         />
         
         {/* Mobile Menu Content - Refined Animation */}
-        <div className={`md:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-2xl border-b border-slate-200/50 shadow-2xl z-40 overflow-hidden rounded-b-[2.5rem] transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) ${
+        <div className={`md:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-2xl border-b border-slate-200/50 shadow-2xl z-40 overflow-y-auto rounded-b-[2.5rem] transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) ${
           isOpen 
             ? 'opacity-100 translate-y-0 max-h-[85vh] visible' 
             : 'opacity-0 -translate-y-4 max-h-0 invisible'
@@ -130,8 +132,23 @@ const Navbar: React.FC = () => {
               </NavLink>
             ))}
             <NavLink
-              to="/wishlist"
+              to="/presentation"
               style={{ transitionDelay: `${navItems.length * 50}ms` }}
+              className={({ isActive }) =>
+                `block text-lg font-bold px-6 py-4 rounded-2xl transition-all duration-300 transform flex items-center gap-2 ${
+                  isOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
+                } ${
+                  isActive 
+                    ? 'text-indigo-600 bg-indigo-50/80 shadow-sm' 
+                    : 'text-indigo-600 hover:bg-indigo-50'
+                }`
+              }
+            >
+              <Sparkles className="w-5 h-5" /> Watch Presentation
+            </NavLink>
+            <NavLink
+              to="/wishlist"
+              style={{ transitionDelay: `${(navItems.length + 1) * 50}ms` }}
               className={({ isActive }) =>
                 `block text-lg font-medium px-6 py-4 rounded-2xl transition-all duration-300 transform ${
                   isOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
