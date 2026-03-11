@@ -7,7 +7,6 @@ import StickyCTA from './components/StickyCTA';
 import SplashScreen from './components/SplashScreen';
 import Seo from './components/Seo';
 import { AppProvider } from './context/AppContext';
-import GlobalAudioPlayer from './components/GlobalAudioPlayer';
 
 // Eager Load Critical Pages
 import Home from './pages/Home';
@@ -56,14 +55,13 @@ const AppContent = () => {
       {!isFullScreenRoute && <Navbar />}
       
       <main className="flex-grow">
-        <GlobalAudioPlayer />
         <Suspense fallback={
           <div className="min-h-screen flex items-center justify-center">
              <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
           </div>
         }>
           <Routes>
-            <Route path="/" element={<PageWrapper title="Pharmelo | #1 Instant Pharmacy in Solan" desc="Order medicine online in Solan. Skip the line at local pharmacies."><Home /></PageWrapper>} />
+            <Route path="/" element={<PageWrapper title="Pharmelo | #1 Smart Pharmacy in Solan" desc="Order medicine online in Solan. Skip the line at local pharmacies."><Home /></PageWrapper>} />
             <Route path="/owners" element={<PageWrapper title="Pharmelo for Pharmacy Owners | Grow Your Business" desc="Partner with Pharmelo to increase sales and streamline operations. The best pharmacy management software and online medicine sales platform for shops in Solan and Himachal." keywords="pharmacy partnership Solan, online medicine sales Himachal, pharmacy management software, medical store business growth"><Owners /></PageWrapper>} />
             <Route path="/wishlist" element={<PageWrapper title="Try Pharmelo Demo | Live App Simulation" desc="Experience the Pharmelo app right now in your browser. No download required."><WishlistPage /></PageWrapper>} />
             <Route path="/shop-demo" element={<PageWrapper title="Pharmelo Partner Dashboard Demo" desc="Interactive demo for pharmacy owners. See how to manage orders and inventory."><ShopOwnerDemoPage /></PageWrapper>} />

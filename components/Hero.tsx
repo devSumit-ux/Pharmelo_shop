@@ -75,15 +75,14 @@ const Hero: React.FC = () => {
 
         {/* Heading */}
         <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 mb-6">
-          Medicine Delivery <br className="hidden md:block" />
+          Smart Pharmacy <br className="hidden md:block" />
           <span className="text-blue-600 inline-block">
-            & Healthcare in Solan
+            & Doctor Booking in Solan
           </span>
         </motion.h1>
 
         <motion.p variants={itemVariants} className="mt-4 text-lg text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed">
-          A smart digital pharmacy ecosystem featuring AI prescription reading, 
-          WhatsApp ordering, and auto-refill reminders.
+          A smart healthcare platform to pre-order medicines, skip the queue, and book doctor appointments effortlessly. Home delivery available from select partner shops.
         </motion.p>
 
         <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
