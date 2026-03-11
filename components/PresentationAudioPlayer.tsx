@@ -68,9 +68,9 @@ const PresentationAudioPlayer: React.FC<PresentationAudioPlayerProps> = ({ slide
 
         // 2. If not cached, generate it
         if (!base64Audio) {
-          const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+          const apiKey = import.meta.env.VITE_GEMINI_API_KEY || (typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : undefined);
           if (!apiKey) {
-            console.error("GEMINI_API_KEY is missing");
+            console.error("GEMINI_API_KEY is missing. Please set VITE_GEMINI_API_KEY in your environment.");
             return;
           }
           const ai = new GoogleGenAI({ apiKey });

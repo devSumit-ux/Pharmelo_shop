@@ -43,9 +43,9 @@ const VoiceMessage: React.FC = () => {
     const generateAudio = async () => {
       setIsLoading(true);
       try {
-        const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+        const apiKey = import.meta.env.VITE_GEMINI_API_KEY || (typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : undefined);
         if (!apiKey) {
-          console.error("GEMINI_API_KEY is missing");
+          console.error("GEMINI_API_KEY is missing. Please set VITE_GEMINI_API_KEY in your environment.");
           setIsLoading(false);
           return;
         }

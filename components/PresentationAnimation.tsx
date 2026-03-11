@@ -87,9 +87,9 @@ const PresentationAnimation: React.FC = () => {
         let base64Audio = cachedBase64;
 
         if (!base64Audio) {
-          const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+          const apiKey = import.meta.env.VITE_GEMINI_API_KEY || (typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : undefined);
           if (!apiKey) {
-            console.error("GEMINI_API_KEY is missing");
+            console.error("GEMINI_API_KEY is missing. Please set VITE_GEMINI_API_KEY in your environment.");
             return;
           }
           const ai = new GoogleGenAI({ apiKey });
@@ -429,6 +429,13 @@ const PresentationAnimation: React.FC = () => {
                         className="absolute top-0 left-0 w-full h-1 bg-indigo-400"
                       />
                     )}
+                    {step === 5 && (
+                      <motion.div 
+                        animate={{ left: ["-100%", "100%"] }}
+                        transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                        className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent"
+                      />
+                    )}
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <p className="text-[10px] text-indigo-600 font-bold uppercase">New Order #882</p>
@@ -476,7 +483,7 @@ const PresentationAnimation: React.FC = () => {
                             className="absolute inset-0 bg-green-400 rounded-full -z-10"
                           />
                         </div>
-                        Accepted & Preparing...
+                        {step === 5 ? "Preparing Medicines..." : "Order Prepared"}
                       </motion.div>
                     ) : (
                       <motion.button 

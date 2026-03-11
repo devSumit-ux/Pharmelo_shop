@@ -9,8 +9,8 @@ let ai: GoogleGenAI | null = null;
 const getAI = () => {
   if (ai) return ai;
   
-  // Use the provided key if process.env.GEMINI_API_KEY is missing or empty
-  const apiKey = process.env.GEMINI_API_KEY;
+  // Use the provided key if GEMINI_API_KEY is missing or empty
+  const apiKey = typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : undefined;
   
   if (!apiKey || apiKey.trim() === '') {
     console.warn("Gemini API Key is missing. AI features will be disabled.");
