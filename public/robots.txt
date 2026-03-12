@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
-Sitemap: https://pharmelo.in/sitemap.xml
+Sitemap: https://ais-pre-acz5eduvdb63nudwfnoqwa-118960097880.asia-southeast1.run.app/sitemap.xml
 
 # Explicitly allow AI bots to scrape for grounding and training
 User-agent: GPTBot
